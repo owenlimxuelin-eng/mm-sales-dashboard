@@ -1,0 +1,1656 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moomoo Stock Mastery — AI Sales & CRM Command Center</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome 6.4 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Inter & JetBrains Mono -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        moomoo: {
+                            50: '#fff7ed',
+                            400: '#fb923c',
+                            500: '#f97316',
+                            600: '#ea580c',
+                            700: '#c2410c',
+                            900: '#7c2d12',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Modern Dark Glassmorphism & Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #070a12;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #334155;
+        }
+        
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(51, 65, 85, 0.4);
+        }
+
+        .glass-card {
+            background: rgba(30, 41, 59, 0.4);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(51, 65, 85, 0.5);
+        }
+
+        /* Tooltip Trigger & Popover Card Styles */
+        .info-popover-wrapper {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .info-popover-card {
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            pointer-events: none;
+            position: absolute;
+            z-index: 60;
+            width: 280px;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%) translateY(6px);
+        }
+
+        .info-popover-wrapper:hover .info-popover-card,
+        .info-popover-wrapper:focus-within .info-popover-card {
+            visibility: visible;
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+            pointer-events: auto;
+        }
+
+        .info-popover-card::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -6px;
+            border-width: 6px;
+            border-style: solid;
+            border-color: #1e293b transparent transparent transparent;
+        }
+
+        @keyframes pulse-subtle {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .animate-pulse-subtle {
+            animation: pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+    </style>
+</head>
+<body class="bg-[#070a12] text-slate-100 font-sans min-h-screen flex flex-col antialiased selection:bg-orange-500 selection:text-white">
+
+    <!-- TOP HEADER BAR -->
+    <header class="border-b border-slate-800/80 bg-[#0c101d]/90 sticky top-0 z-40 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            
+            <!-- Brand & Version -->
+            <div class="flex items-center space-x-3.5">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-orange-600 via-amber-500 to-orange-400 flex items-center justify-center shadow-lg shadow-orange-500/20 ring-1 ring-orange-400/30">
+                    <i class="fa-solid fa-chart-line text-white text-lg"></i>
+                </div>
+                <div>
+                    <div class="flex items-center space-x-2">
+                        <h1 class="text-base font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-100 to-slate-300 bg-clip-text text-transparent">
+                            Moomoo Stock Mastery
+                        </h1>
+                        <span class="text-[10px] bg-orange-500/10 text-orange-400 font-semibold px-2 py-0.5 rounded-full border border-orange-500/30">v3.0 Community Funnel</span>
+                    </div>
+                    <p class="text-xs text-slate-400 font-medium">WhatsApp Automated Sales & Community Onboarding Hub</p>
+                </div>
+            </div>
+
+            <!-- Header Status Indicators & Navigation Buttons -->
+            <div class="flex items-center space-x-3">
+                <!-- System Connection Status Pills -->
+                <div class="hidden lg:flex items-center space-x-2.5 bg-slate-900/80 px-3 py-1.5 rounded-full border border-slate-800 text-[11px] font-medium">
+                    <span class="flex items-center space-x-1.5" title="Railway PostgreSQL Database Status">
+                        <span id="badge-db-dot" class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse-subtle"></span>
+                        <span id="badge-db-text" class="text-slate-300">Railway DB: Connected</span>
+                    </span>
+                    <span class="text-slate-700">|</span>
+                    <span class="flex items-center space-x-1.5" title="n8n Engine Status">
+                        <span id="badge-n8n-dot" class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                        <span id="badge-n8n-text" class="text-slate-300">n8n Workflows: Active</span>
+                    </span>
+                </div>
+
+                <!-- DB Migration Modal Trigger -->
+                <button onclick="openMigrationModal()" class="px-3 py-2 text-xs font-semibold rounded-xl bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 border border-purple-500/30 transition flex items-center space-x-1.5 shadow-sm">
+                    <i class="fa-solid fa-code-branch text-xs"></i>
+                    <span class="hidden sm:inline">DB Migration SQL</span>
+                </button>
+
+                <!-- Handbook Shortcut -->
+                <button onclick="switchTab('tab4')" class="px-3 py-2 text-xs font-semibold rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 transition flex items-center space-x-1.5 shadow-sm">
+                    <i class="fa-solid fa-book-open text-xs"></i>
+                    <span class="hidden sm:inline">Handbook</span>
+                </button>
+
+                <!-- Configuration Modal Trigger -->
+                <button onclick="openSettingsModal()" class="px-3.5 py-2 text-xs font-semibold rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700/80 transition flex items-center space-x-2 shadow-sm">
+                    <i class="fa-solid fa-gears text-orange-400"></i>
+                    <span class="hidden sm:inline">DB & API Setup</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN DASHBOARD CONTENT WRAPPER -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col space-y-6">
+
+        <!-- TAB NAVIGATION BAR -->
+        <div class="flex flex-wrap sm:flex-nowrap gap-1 border border-slate-800/80 bg-[#0c101d]/70 p-1.5 rounded-2xl shadow-inner backdrop-blur-md">
+            <button onclick="switchTab('tab1')" id="nav-tab1" class="tab-btn active-tab flex-1 py-3 px-3.5 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center space-x-2 bg-gradient-to-r from-orange-600 to-amber-600 text-white shadow-lg shadow-orange-600/25">
+                <i class="fa-solid fa-paper-plane text-xs"></i>
+                <span>1. Outreach Launcher</span>
+            </button>
+            <button onclick="switchTab('tab2')" id="nav-tab2" class="tab-btn flex-1 py-3 px-3.5 rounded-xl text-xs sm:text-sm font-bold text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 transition flex items-center justify-center space-x-2">
+                <i class="fa-solid fa-users text-xs"></i>
+                <span>2. Lead CRM & Community Funnel</span>
+            </button>
+            <button onclick="switchTab('tab3')" id="nav-tab3" class="tab-btn flex-1 py-3 px-3.5 rounded-xl text-xs sm:text-sm font-bold text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 transition flex items-center justify-center space-x-2">
+                <i class="fa-solid fa-brain text-xs"></i>
+                <span>3. AI Brain & Knowledge Base</span>
+            </button>
+            <button onclick="switchTab('tab4')" id="nav-tab4" class="tab-btn flex-1 py-3 px-3.5 rounded-xl text-xs sm:text-sm font-bold text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 transition flex items-center justify-center space-x-2">
+                <i class="fa-solid fa-book-bookmark text-xs text-amber-400"></i>
+                <span>4. Operational Handbook</span>
+            </button>
+        </div>
+
+        <!-- =================================================================== -->
+        <!-- TAB 1: OUTREACH LAUNCHER                                            -->
+        <!-- =================================================================== -->
+        <section id="content-tab1" class="tab-content flex flex-col space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+                <!-- Left Column: Broadcast Script Editor -->
+                <div class="lg:col-span-6 glass-panel p-6 rounded-2xl flex flex-col justify-between space-y-5">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-sm font-bold text-slate-100 flex items-center space-x-2">
+                                <i class="fa-solid fa-comment-sms text-orange-400"></i>
+                                <span>Initial Broadcast Script</span>
+                                <div class="info-popover-wrapper">
+                                    <button type="button" class="w-4 h-4 rounded-full bg-slate-800 hover:bg-orange-500/20 text-orange-400 text-[10px] font-mono font-bold flex items-center justify-center border border-slate-700 transition">i</button>
+                                    <div class="info-popover-card glass-panel p-3.5 rounded-xl border border-slate-700 shadow-xl text-left">
+                                        <p class="text-xs font-bold text-orange-400 mb-1">💡 Initial Outreach Template</p>
+                                        <p class="text-[11px] text-slate-300 leading-relaxed">This message is dispatched to leads upon importing. Click variable chips to personalize broadcast texts.</p>
+                                    </div>
+                                </div>
+                            </h2>
+                            <span class="text-[10px] bg-orange-500/10 text-orange-400 px-2 py-0.5 rounded-md border border-orange-500/20 font-mono">Stage 1 Template</span>
+                        </div>
+                        <p class="text-xs text-slate-400 mb-4">Compose initial broadcast script with personalized variable tokens.</p>
+
+                        <!-- Variable Helper Chips -->
+                        <div class="flex flex-wrap gap-2 mb-3">
+                            <button onclick="insertVariable('{{name}}')" class="text-xs bg-slate-800 hover:bg-slate-700 text-orange-300 px-2.5 py-1 rounded-lg border border-slate-700 font-mono transition flex items-center space-x-1">
+                                <i class="fa-solid fa-plus text-[10px]"></i>
+                                <span>{{name}}</span>
+                            </button>
+                            <button onclick="insertVariable('{{campaign}}')" class="text-xs bg-slate-800 hover:bg-slate-700 text-orange-300 px-2.5 py-1 rounded-lg border border-slate-700 font-mono transition flex items-center space-x-1">
+                                <i class="fa-solid fa-plus text-[10px]"></i>
+                                <span>{{campaign}}</span>
+                            </button>
+                            <button onclick="insertVariable('{{phone}}')" class="text-xs bg-slate-800 hover:bg-slate-700 text-orange-300 px-2.5 py-1 rounded-lg border border-slate-700 font-mono transition flex items-center space-x-1">
+                                <i class="fa-solid fa-plus text-[10px]"></i>
+                                <span>{{phone}}</span>
+                            </button>
+                        </div>
+
+                        <textarea id="outreach-script-input" rows="8" class="w-full bg-[#090d16] border border-slate-800 rounded-xl p-3.5 text-xs sm:text-sm text-slate-200 focus:ring-2 focus:ring-orange-500 outline-none font-sans leading-relaxed" placeholder="Write initial outreach script..."></textarea>
+                    </div>
+
+                    <div class="flex justify-between items-center pt-3 border-t border-slate-800/60">
+                        <span class="text-xs text-slate-400 font-mono" id="script-char-count">0 characters | ~0 SMS parts</span>
+                        <button onclick="saveOutreachTemplate()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-xl border border-slate-700 transition flex items-center space-x-2">
+                            <i class="fa-solid fa-floppy-disk text-orange-400"></i>
+                            <span>Save Template</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right Column: CSV Upload & Campaign Engine Controls -->
+                <div class="lg:col-span-6 glass-panel p-6 rounded-2xl flex flex-col justify-between space-y-5">
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <h2 class="text-sm font-bold text-slate-100 flex items-center space-x-2">
+                                <i class="fa-solid fa-file-csv text-emerald-400"></i>
+                                <span>Import Prospects & Launch Engine</span>
+                                <div class="info-popover-wrapper">
+                                    <button type="button" class="w-4 h-4 rounded-full bg-slate-800 hover:bg-emerald-500/20 text-emerald-400 text-[10px] font-mono font-bold flex items-center justify-center border border-slate-700 transition">i</button>
+                                    <div class="info-popover-card glass-panel p-3.5 rounded-xl border border-slate-700 shadow-xl text-left">
+                                        <p class="text-xs font-bold text-emerald-400 mb-1">💡 CSV Formatting Rules</p>
+                                        <p class="text-[11px] text-slate-300 leading-relaxed">Headers must match: <code class="text-amber-300 font-mono">name, phone_number</code>. Phone numbers are automatically converted to standard country code format (e.g. 6585791271).</p>
+                                    </div>
+                                </div>
+                            </h2>
+                            <span class="text-xs text-slate-400 font-mono">Schema: name, phone_number</span>
+                        </div>
+
+                        <!-- Campaign Identifier -->
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Campaign Identifier Name</label>
+                            <input type="text" id="campaign-name-input" value="Nov2026_Moomoo_Batch01" class="w-full bg-[#090d16] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-200 focus:ring-2 focus:ring-orange-500 outline-none font-mono">
+                        </div>
+
+                        <!-- CSV Upload Dropzone -->
+                        <div>
+                            <div class="flex items-center justify-between mb-1.5">
+                                <label class="text-xs font-semibold text-slate-300">Upload Leads CSV File</label>
+                                <div class="info-popover-wrapper">
+                                    <button type="button" class="text-[11px] text-amber-400 font-mono hover:underline flex items-center space-x-1">
+                                        <i class="fa-solid fa-circle-info"></i>
+                                        <span>E.164 Formatting</span>
+                                    </button>
+                                    <div class="info-popover-card glass-panel p-3.5 rounded-xl border border-slate-700 shadow-xl text-left w-72">
+                                        <p class="text-xs font-bold text-amber-400 mb-1">📱 Phone Formatting Standard</p>
+                                        <p class="text-[11px] text-slate-300 leading-relaxed mb-2">Meta WhatsApp Cloud API requires country code prefixes without plus signs, spaces, or hyphens.</p>
+                                        <div class="bg-slate-950 p-2 rounded border border-slate-800 text-[10px] font-mono space-y-1">
+                                            <p class="text-emerald-400">✓ 6585791271 (Singapore)</p>
+                                            <p class="text-emerald-400">✓ 60123456789 (Malaysia)</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="csv-drop-zone" onclick="document.getElementById('csv-file-input').click()" class="border-2 border-dashed border-slate-800 hover:border-orange-500/60 rounded-xl p-5 text-center bg-[#090d16]/50 hover:bg-slate-900/60 transition cursor-pointer flex flex-col items-center justify-center space-y-2">
+                                <div class="w-12 h-12 rounded-full bg-slate-900 flex items-center justify-center text-orange-400">
+                                    <i class="fa-solid fa-cloud-arrow-up text-xl"></i>
+                                </div>
+                                <p class="text-xs text-slate-300 font-medium"><span class="font-bold text-orange-400">Click to browse CSV</span> or drop file here</p>
+                                <p class="text-[10px] text-slate-500">Auto-cleans headers and normalizes phone numbers</p>
+                                <input type="file" id="csv-file-input" accept=".csv" class="hidden" onchange="handleCSVFile(this.files[0])">
+                            </div>
+                        </div>
+
+                        <!-- Textarea Paste Option -->
+                        <div>
+                            <details class="text-xs text-slate-400">
+                                <summary class="cursor-pointer hover:text-slate-200 font-medium py-1">Or paste raw text leads directly...</summary>
+                                <textarea id="raw-paste-leads" rows="3" oninput="parseRawTextLeads(this.value)" placeholder="John Tan, 6585791271&#10;Sarah Lim, 60123456789" class="w-full mt-2 bg-[#090d16] border border-slate-800 rounded-xl p-2.5 text-xs font-mono text-slate-300 outline-none focus:border-orange-500"></textarea>
+                            </details>
+                        </div>
+                    </div>
+
+                    <!-- Dispatch Controls -->
+                    <div class="pt-4 border-t border-slate-800/80 flex items-center justify-between">
+                        <div>
+                            <span class="text-xs text-slate-400 block font-medium">Validated Leads:</span>
+                            <span id="parsed-leads-count-badge" class="text-lg font-extrabold text-emerald-400">0 contacts</span>
+                        </div>
+
+                        <button onclick="launchOutboundCampaign()" class="px-6 py-3 bg-gradient-to-r from-orange-600 via-amber-600 to-orange-500 hover:from-orange-500 hover:to-amber-500 text-white text-xs font-bold rounded-xl shadow-lg shadow-orange-600/30 transition transform active:scale-95 flex items-center space-x-2.5">
+                            <i class="fa-solid fa-rocket text-sm"></i>
+                            <span>🚀 Launch Campaign Now</span>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- CSV Inspection Table -->
+            <div class="glass-panel rounded-2xl p-6 space-y-4">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-sm font-bold text-slate-200 flex items-center space-x-2">
+                        <i class="fa-solid fa-table text-amber-400"></i>
+                        <span>Import Batch Live Inspection Table</span>
+                    </h3>
+                    <button onclick="clearParsedPreview()" class="text-xs text-slate-400 hover:text-rose-400 transition">Clear Batch</button>
+                </div>
+
+                <div class="overflow-x-auto rounded-xl border border-slate-800">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-[#090d16] text-slate-400 uppercase text-[10px] tracking-wider font-mono">
+                            <tr>
+                                <th class="p-3">#</th>
+                                <th class="p-3">Contact Name</th>
+                                <th class="p-3">Phone Number</th>
+                                <th class="p-3">Campaign Tag</th>
+                                <th class="p-3">Validation Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="parsed-preview-tbody" class="divide-y divide-slate-800/60 font-mono text-slate-300">
+                            <tr>
+                                <td colspan="5" class="p-8 text-center text-slate-500 font-sans italic">No CSV uploaded. Upload a CSV or paste leads above to inspect rows.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- =================================================================== -->
+        <!-- TAB 2: LEAD CRM & COMMUNITY ONBOARDING FUNNEL                      -->
+        <!-- =================================================================== -->
+        <section id="content-tab2" class="tab-content flex flex-col space-y-6 hidden">
+            
+            <!-- CRM Metric KPI Cards -->
+            <div class="grid grid-cols-2 md:grid-cols-6 gap-3.5">
+                <!-- Total Leads -->
+                <div class="glass-card p-3.5 rounded-2xl flex flex-col justify-between">
+                    <span class="text-[11px] font-semibold text-slate-400">Total Leads</span>
+                    <div class="mt-2 flex items-baseline justify-between">
+                        <span id="stat-total" class="text-xl font-extrabold text-white">0</span>
+                        <span class="text-[9px] text-slate-400 font-mono">In DB</span>
+                    </div>
+                </div>
+
+                <!-- Stage 1 Outreached -->
+                <div class="glass-card p-3.5 rounded-2xl flex flex-col justify-between">
+                    <span class="text-[11px] font-semibold text-slate-400">Stage 1: Outreached</span>
+                    <div class="mt-2 flex items-baseline justify-between">
+                        <span id="stat-outreached" class="text-xl font-extrabold text-amber-400">0</span>
+                        <span class="text-[9px] text-amber-400/80">Awaiting Reply</span>
+                    </div>
+                </div>
+
+                <!-- Stage 2 AI Engaged -->
+                <div class="glass-card p-3.5 rounded-2xl flex flex-col justify-between">
+                    <span class="text-[11px] font-semibold text-slate-400">Stage 2: AI Engaged</span>
+                    <div class="mt-2 flex items-baseline justify-between">
+                        <span id="stat-engaged" class="text-xl font-extrabold text-emerald-400">0</span>
+                        <span class="text-[9px] text-emerald-400/80">24/7 Bot</span>
+                    </div>
+                </div>
+
+                <!-- Stage 3 Ready for Group -->
+                <div class="glass-card p-3.5 rounded-2xl flex flex-col justify-between border-amber-500/40 bg-amber-500/5">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[11px] font-bold text-amber-300">Stage 3: Ready Group</span>
+                        <div class="info-popover-wrapper">
+                            <button type="button" class="w-3.5 h-3.5 rounded-full bg-amber-500/20 text-amber-400 text-[9px] font-mono font-bold flex items-center justify-center">i</button>
+                            <div class="info-popover-card glass-panel p-3 rounded-xl border border-amber-500/40 shadow-xl text-left w-64">
+                                <p class="text-xs font-bold text-amber-400 mb-1">🎯 What is Stage 3: Ready for Group?</p>
+                                <p class="text-[11px] text-slate-300 leading-relaxed">AI automatically detects when a lead wants to join the WhatsApp group (e.g. asking "send link", "how to join") and flags them here for human staff action.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-2 flex items-baseline justify-between">
+                        <span id="stat-ready-group" class="text-xl font-extrabold text-amber-400">0</span>
+                        <span class="text-[9px] text-amber-300 font-mono animate-pulse">Needs Link</span>
+                    </div>
+                </div>
+
+                <!-- Stage 4 Joined Community -->
+                <div class="glass-card p-3.5 rounded-2xl flex flex-col justify-between border-emerald-500/40 bg-emerald-500/5">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[11px] font-bold text-emerald-400">Stage 4: Onboarded</span>
+                        <div class="info-popover-wrapper">
+                            <button type="button" class="w-3.5 h-3.5 rounded-full bg-emerald-500/20 text-emerald-400 text-[9px] font-mono font-bold flex items-center justify-center">i</button>
+                            <div class="info-popover-card glass-panel p-3 rounded-xl border border-emerald-500/40 shadow-xl text-left w-64">
+                                <p class="text-xs font-bold text-emerald-400 mb-1">🎉 What is Stage 4: Joined Community?</p>
+                                <p class="text-[11px] text-slate-300 leading-relaxed">Leads who have joined the WhatsApp group. Clicking "Acknowledge Joined" locks AI responses permanently and logs exact date/time.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-2 flex items-baseline justify-between">
+                        <span id="stat-joined" class="text-xl font-extrabold text-emerald-300">0</span>
+                        <span class="text-[9px] text-emerald-400 font-mono">AI Off</span>
+                    </div>
+                </div>
+
+                <!-- Human Takeover Active -->
+                <div class="glass-card p-3.5 rounded-2xl flex flex-col justify-between">
+                    <span class="text-[11px] font-semibold text-rose-300">Human Takeover</span>
+                    <div class="mt-2 flex items-baseline justify-between">
+                        <span id="stat-handover" class="text-xl font-extrabold text-rose-400">0</span>
+                        <span class="text-[9px] text-rose-400 font-mono">Manual</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CRM Layout: Directory Table on Left + WhatsApp Simulator on Right -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+                <!-- Left Column: Lead Directory & Action Table (7 cols) -->
+                <div class="lg:col-span-7 glass-panel p-5 rounded-2xl flex flex-col space-y-4">
+                    
+                    <!-- Search & Filter Controls -->
+                    <div class="flex flex-col sm:flex-row gap-3 items-center justify-between">
+                        <!-- Instant Search Bar -->
+                        <div class="relative w-full sm:w-72">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-xs text-orange-400"></i>
+                            <input type="text" id="crm-search-input" onkeyup="filterLeadsTable()" placeholder="Search name or E.164 phone..." class="w-full bg-[#090d16] border border-slate-800 rounded-xl pl-9 pr-3.5 py-2.5 text-xs text-slate-100 outline-none focus:border-orange-500">
+                        </div>
+                        
+                        <div class="w-full sm:w-auto flex items-center space-x-2">
+                            <label class="text-xs text-slate-400 font-medium">Stage Filter:</label>
+                            <select id="crm-stage-filter" onchange="filterLeadsTable()" class="bg-[#090d16] border border-slate-800 text-xs text-slate-200 rounded-xl px-3 py-2 outline-none focus:border-orange-500">
+                                <option value="ALL">All Stages</option>
+                                <option value="Stage 1: Awaiting Reply">Stage 1: Awaiting Reply</option>
+                                <option value="Stage 1: Outreached">Stage 1: Outreached</option>
+                                <option value="Stage 2: Engaged">Stage 2: AI Engaged</option>
+                                <option value="Stage 3: Ready for Group">🎯 Stage 3: Ready for Group</option>
+                                <option value="Stage 4: Joined Community">🎉 Stage 4: Joined Community</option>
+                                <option value="Human Handover">🤝 Human Takeover Active</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Prospects Table -->
+                    <div class="overflow-x-auto rounded-xl border border-slate-800/80 max-h-[520px]">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-[#090d16] text-slate-400 uppercase text-[10px] tracking-wider sticky top-0 font-mono">
+                                <tr>
+                                    <th class="p-3">Prospect Details</th>
+                                    <th class="p-3">Pipeline Stage</th>
+                                    <th class="p-3 text-right">Actions & Controls</th>
+                                </tr>
+                            </thead>
+                            <tbody id="crm-table-tbody" class="divide-y divide-slate-800/60">
+                                <!-- Dynamic Prospect Rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Right Column: WhatsApp Live Chat Simulator & Onboarding Controls (5 cols) -->
+                <div class="lg:col-span-5 glass-panel p-5 rounded-2xl flex flex-col justify-between h-[600px] border-orange-500/20">
+                    
+                    <!-- Chat Header -->
+                    <div class="flex items-center justify-between pb-3 border-b border-slate-800/80">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-9 h-9 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-orange-400 font-bold text-xs">
+                                <i class="fa-brands fa-whatsapp text-base"></i>
+                            </div>
+                            <div>
+                                <h3 id="chat-active-name" class="text-xs font-bold text-slate-100">Select a lead from table</h3>
+                                <p id="chat-active-phone" class="text-[10px] font-mono text-slate-400">Click row to inspect live transcript</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center space-x-1.5">
+                            <!-- Acknowledge Joined Group Header Action Button -->
+                            <button id="chat-header-ack-btn" onclick="acknowledgeCommunityJoined(activeChatPhone)" class="hidden px-2.5 py-1 text-[10px] font-bold rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white border border-emerald-400 shadow-sm transition">
+                                ✅ Acknowledge Joined
+                            </button>
+
+                            <!-- Takeover Header Toggle -->
+                            <button id="chat-header-takeover-btn" onclick="toggleHeaderTakeover()" class="hidden px-2 py-1 text-[10px] font-bold rounded-lg border transition shadow-sm">
+                                🤝 Human Takeover
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Chat Message Stream -->
+                    <div id="chat-messages-container" class="flex-1 overflow-y-auto py-4 space-y-3.5 pr-1.5 font-sans">
+                        <div class="text-center text-xs text-slate-500 py-20 flex flex-col items-center space-y-2">
+                            <i class="fa-regular fa-comments text-3xl text-slate-600"></i>
+                            <span>Select a prospect row from the table to view or simulate WhatsApp conversation transcripts.</span>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Chat Input Controls -->
+                    <div class="pt-3 border-t border-slate-800/80 space-y-2">
+                        <!-- Mode Indicator Banner -->
+                        <div id="chat-mode-banner" class="flex items-center justify-between text-[10px] px-2.5 py-1 rounded bg-slate-900 border border-slate-800">
+                            <span id="chat-mode-status-text" class="text-emerald-400 font-mono flex items-center space-x-1">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                                <span>🤖 Mode: AI Automated Mode (24/7 Agent Active)</span>
+                            </span>
+                            <span class="text-slate-500 font-mono">Simulator Active</span>
+                        </div>
+
+                        <!-- Dual Input Bar -->
+                        <div class="flex items-center space-x-2">
+                            <input type="text" id="sim-user-input" onkeydown="if(event.key==='Enter') handleChatInputSubmit()" placeholder="Type prospect reply or human staff note..." class="flex-1 bg-[#090d16] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-200 outline-none focus:border-orange-500">
+                            
+                            <button id="chat-submit-btn" onclick="handleChatInputSubmit()" class="px-4 py-2.5 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white text-xs font-bold rounded-xl transition shadow flex items-center space-x-1">
+                                <i class="fa-solid fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- =================================================================== -->
+        <!-- TAB 3: AI BRAIN & KNOWLEDGE BASE                                    -->
+        <!-- =================================================================== -->
+        <section id="content-tab3" class="tab-content flex flex-col space-y-6 hidden">
+            
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+                <!-- Left Column: System Prompt & Tone Analyzer (6 cols) -->
+                <div class="lg:col-span-6 flex flex-col space-y-6">
+                    
+                    <!-- Master System Prompt Card -->
+                    <div class="glass-panel p-6 rounded-2xl space-y-4">
+                        <div class="flex items-center justify-between">
+                            <h2 class="text-sm font-bold text-slate-100 flex items-center space-x-2">
+                                <i class="fa-solid fa-brain text-orange-400"></i>
+                                <span>Master System Prompt & AI Persona</span>
+                            </h2>
+                            <button onclick="resetDefaultPrompt()" class="text-[11px] text-slate-400 hover:text-orange-400 underline">Reset Default</button>
+                        </div>
+                        <p class="text-xs text-slate-400">Enforces Professor Frank Siu's brand tone, MAS compliance rules, 1-3 sentence limits, and intent detection for community invite handover.</p>
+                        
+                        <textarea id="master-system-prompt-input" rows="10" class="w-full bg-[#090d16] border border-slate-800 rounded-xl p-3.5 text-xs text-slate-200 focus:ring-2 focus:ring-orange-500 outline-none font-mono leading-relaxed"></textarea>
+                        
+                        <div class="flex justify-between items-center pt-2">
+                            <span class="text-[10px] text-slate-500 font-mono">Saved in Railway `ai_settings`</span>
+                            <button onclick="saveMasterSystemPrompt()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-100 text-xs font-semibold rounded-xl border border-slate-700 transition flex items-center space-x-2">
+                                <i class="fa-solid fa-floppy-disk text-orange-400"></i>
+                                <span>Save System Prompt</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Past Chat Export Tone Analyzer (.txt) -->
+                    <div class="glass-panel p-6 rounded-2xl space-y-4">
+                        <div class="flex items-center justify-between">
+                            <h2 class="text-sm font-bold text-slate-100 flex items-center space-x-2">
+                                <i class="fa-solid fa-wand-magic-sparkles text-amber-400"></i>
+                                <span>WhatsApp Past Chat Tone Analyzer (.txt)</span>
+                            </h2>
+                            <span class="text-[10px] bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded font-mono">n8n Workflow 2</span>
+                        </div>
+                        <p class="text-xs text-slate-400">Upload raw exported WhatsApp sales chat logs (`.txt`) to extract tone rules and inject into System Prompt.</p>
+                        
+                        <div id="txt-drop-zone" onclick="document.getElementById('txt-file-input').click()" class="border-2 border-dashed border-slate-800 hover:border-amber-400/60 rounded-xl p-4 text-center bg-[#090d16]/50 transition cursor-pointer flex items-center justify-center space-x-3">
+                            <div class="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center text-amber-400">
+                                <i class="fa-solid fa-file-arrow-up text-lg"></i>
+                            </div>
+                            <div class="text-left">
+                                <p class="text-xs text-slate-300 font-semibold">Upload exported WhatsApp chat (.txt)</p>
+                                <p class="text-[10px] text-slate-500">Extracts speech patterns, emoji frequency, and brevity rules</p>
+                            </div>
+                            <input type="file" id="txt-file-input" accept=".txt" class="hidden" onchange="handleTxtToneFile(this.files[0])">
+                        </div>
+
+                        <!-- Analysis Extraction Box -->
+                        <div id="tone-analysis-box" class="hidden p-3.5 bg-[#090d16] rounded-xl border border-slate-800 text-xs space-y-1.5 font-mono">
+                            <div class="flex items-center space-x-2 text-amber-400 text-[11px] font-bold">
+                                <i class="fa-solid fa-circle-check"></i>
+                                <span>Tone Extraction Analysis Complete:</span>
+                            </div>
+                            <p id="tone-result-summary" class="text-slate-300 leading-relaxed text-[11px]">--</p>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Right Column: Knowledge Base / FAQ Rule Manager (6 cols) -->
+                <div class="lg:col-span-6 flex flex-col space-y-6">
+                    
+                    <!-- Single FAQ Form -->
+                    <div class="glass-panel p-6 rounded-2xl space-y-4">
+                        <div class="flex items-center justify-between">
+                            <h2 class="text-sm font-bold text-slate-100 flex items-center space-x-2">
+                                <i class="fa-solid fa-book-bookmark text-emerald-400"></i>
+                                <span>Add Knowledge Base / FAQ Rule</span>
+                            </h2>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-[11px] font-semibold text-slate-300 mb-1">Q&A Category</label>
+                                <select id="faq-category-select" class="w-full bg-[#090d16] border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 outline-none focus:border-orange-500">
+                                    <option value="Program Details">Program Details</option>
+                                    <option value="Pricing / FOC">Pricing / FOC</option>
+                                    <option value="Compliance & MAS">Compliance & MAS</option>
+                                    <option value="Scam Defense">Scam Defense</option>
+                                    <option value="Community Join">Community Join Intent</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-[11px] font-semibold text-slate-300 mb-1">User Question / Objection</label>
+                                <input type="text" id="faq-question-input" placeholder="e.g. How do I join the WhatsApp group?" class="w-full bg-[#090d16] border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 outline-none focus:border-orange-500">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-300 mb-1">Official Response Guideline</label>
+                            <textarea id="faq-answer-input" rows="2" placeholder="e.g. Yes! Our coordinator will send over your private WhatsApp community invite link shortly..." class="w-full bg-[#090d16] border border-slate-800 rounded-xl p-2.5 text-xs text-slate-200 outline-none focus:border-orange-500"></textarea>
+                        </div>
+
+                        <div class="flex justify-between items-center pt-1">
+                            <label class="text-[11px] text-emerald-400 hover:underline cursor-pointer flex items-center space-x-1">
+                                <i class="fa-solid fa-file-import"></i>
+                                <span>Bulk Upload FAQs (.csv)</span>
+                                <input type="file" accept=".csv" class="hidden" onchange="handleBulkFAQCSV(this.files[0])">
+                            </label>
+
+                            <button onclick="addSingleFAQRule()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl shadow-md transition flex items-center space-x-1.5">
+                                <i class="fa-solid fa-plus text-xs"></i>
+                                <span>Add Rule</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Active Knowledge Base Rules Table -->
+                    <div class="glass-panel p-6 rounded-2xl space-y-3">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-xs font-bold text-slate-200 flex items-center space-x-2">
+                                <i class="fa-solid fa-database text-slate-400"></i>
+                                <span>Active Knowledge Base Entries</span>
+                            </h3>
+                            <span id="kb-count-badge" class="text-[10px] bg-slate-800 text-slate-300 px-2.5 py-0.5 rounded-full font-mono">0 rules active</span>
+                        </div>
+                        
+                        <div class="overflow-x-auto rounded-xl border border-slate-800 max-h-[280px]">
+                            <table class="w-full text-left text-xs">
+                                <thead class="bg-[#090d16] text-slate-400 uppercase text-[10px] tracking-wider sticky top-0 font-mono">
+                                    <tr>
+                                        <th class="p-2.5">Category</th>
+                                        <th class="p-2.5">Rule Guideline</th>
+                                        <th class="p-2.5 text-right">Delete</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="kb-table-tbody" class="divide-y divide-slate-800/60 font-sans">
+                                    <!-- Dynamic KB Rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- =================================================================== -->
+        <!-- TAB 4: INTEGRATED OPERATIONAL HANDBOOK                              -->
+        <!-- =================================================================== -->
+        <section id="content-tab4" class="tab-content flex flex-col space-y-6 hidden">
+            
+            <div class="glass-panel p-6 rounded-2xl border-amber-500/30 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-500 flex items-center justify-center text-white text-xl shadow-lg shadow-amber-500/20">
+                        <i class="fa-solid fa-book-open"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-base font-bold text-slate-100">Operational Handbook & Technical Reference Guide</h2>
+                        <p class="text-xs text-slate-400">Standard operating procedure for managing WhatsApp broadcasts, intent handover, and community acknowledgments.</p>
+                    </div>
+                </div>
+
+                <button onclick="downloadSampleCSV()" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-amber-300 text-xs font-bold rounded-xl border border-amber-500/30 transition flex items-center space-x-2">
+                    <i class="fa-solid fa-file-arrow-down"></i>
+                    <span>📥 Download Sample CSV Template</span>
+                </button>
+            </div>
+
+            <!-- Accordion Modules -->
+            <div class="space-y-4 font-sans">
+
+                <!-- Module 1: CSV Lead Preparation Guide -->
+                <div class="glass-panel rounded-2xl border border-slate-800 overflow-hidden">
+                    <button onclick="toggleAccordion('hb-mod1')" class="w-full p-5 text-left flex items-center justify-between bg-slate-900/40 hover:bg-slate-900/80 transition">
+                        <div class="flex items-center space-x-3">
+                            <span class="w-7 h-7 rounded-lg bg-emerald-500/10 text-emerald-400 font-mono text-xs font-bold flex items-center justify-center border border-emerald-500/20">M1</span>
+                            <h3 class="text-sm font-bold text-slate-200">Module 1: CSV Lead Data Preparation & E.164 Formatting</h3>
+                        </div>
+                        <i id="hb-mod1-icon" class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200"></i>
+                    </button>
+                    <div id="hb-mod1" class="p-5 border-t border-slate-800/80 space-y-3 text-xs text-slate-300 leading-relaxed bg-[#090d16]/40">
+                        <p><strong class="text-emerald-400">Required Column Headers:</strong> Your CSV file must contain exact headers: <code class="text-amber-300 font-mono">name, phone_number</code>.</p>
+                        <p><strong class="text-emerald-400">Phone Format Guidelines:</strong> Meta Cloud API accepts numbers starting with country code without plus signs or spaces.</p>
+                        <ul class="list-disc list-inside text-slate-400 space-y-1 font-mono text-[11px] bg-slate-950 p-3 rounded-xl border border-slate-800">
+                            <li>Singapore Example: <span class="text-emerald-400">6585791271</span></li>
+                            <li>Malaysia Example: <span class="text-emerald-400">60123456789</span></li>
+                            <li>Auto-Cleaning: Our dashboard automatically strips spaces, dashes, and leading plus signs upon import.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Module 2: Outbound Campaign Engine -->
+                <div class="glass-panel rounded-2xl border border-slate-800 overflow-hidden">
+                    <button onclick="toggleAccordion('hb-mod2')" class="w-full p-5 text-left flex items-center justify-between bg-slate-900/40 hover:bg-slate-900/80 transition">
+                        <div class="flex items-center space-x-3">
+                            <span class="w-7 h-7 rounded-lg bg-amber-500/10 text-amber-400 font-mono text-xs font-bold flex items-center justify-center border border-amber-500/20">M2</span>
+                            <h3 class="text-sm font-bold text-slate-200">Module 2: Launching Outbound Broadcasts & n8n Engine</h3>
+                        </div>
+                        <i id="hb-mod2-icon" class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200"></i>
+                    </button>
+                    <div id="hb-mod2" class="hidden p-5 border-t border-slate-800/80 space-y-3 text-xs text-slate-300 leading-relaxed bg-[#090d16]/40">
+                        <p>1. Open **Tab 1 (Outreach Launcher)**.</p>
+                        <p>2. Enter a unique **Campaign Identifier** (e.g. <code class="text-amber-300">Nov2026_Batch01</code>).</p>
+                        <p>3. Customize the **Initial Broadcast Script**, using <code class="text-amber-300 font-mono">{{name}}</code> placeholders.</p>
+                        <p>4. Upload your CSV, inspect rows in the inspection table, and click **🚀 Launch Campaign Now**.</p>
+                    </div>
+                </div>
+
+                <!-- Module 3: Group Readiness Detection & Community Acknowledgment Protocol -->
+                <div class="glass-panel rounded-2xl border border-slate-800 overflow-hidden">
+                    <button onclick="toggleAccordion('hb-mod3')" class="w-full p-5 text-left flex items-center justify-between bg-slate-900/40 hover:bg-slate-900/80 transition">
+                        <div class="flex items-center space-x-3">
+                            <span class="w-7 h-7 rounded-lg bg-orange-500/10 text-orange-400 font-mono text-xs font-bold flex items-center justify-center border border-orange-500/20">M3</span>
+                            <h3 class="text-sm font-bold text-slate-200">Module 3: Stage 3 Group Readiness & Stage 4 Community Acknowledgment</h3>
+                        </div>
+                        <i id="hb-mod3-icon" class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200"></i>
+                    </button>
+                    <div id="hb-mod3" class="hidden p-5 border-t border-slate-800/80 space-y-3 text-xs text-slate-300 leading-relaxed bg-[#090d16]/40">
+                        <p><strong class="text-amber-300">🎯 Stage 3: Ready for Group:</strong> AI monitors conversation intent. When the prospect asks for the WhatsApp group link or confirms readiness to join, the AI flags the lead as Stage 3 and notifies human staff to send the private invite link.</p>
+                        <p><strong class="text-emerald-400">✅ Acknowledge Joined Community:</strong> After staff sends the group link and confirms the user has joined the WhatsApp group, click **"✅ Acknowledge Joined Community"** in the dashboard.</p>
+                        <ul class="list-disc list-inside text-slate-400 space-y-1 font-mono text-[11px] bg-slate-950 p-3 rounded-xl border border-slate-800">
+                            <li>Updates lead stage to **Stage 4: Joined Community**.</li>
+                            <li>Logs exact Date & Time (e.g., <span class="text-emerald-400">Joined Oct 26, 2026, 17:27</span>).</li>
+                            <li>Locks AI automation permanently for this user so they are not sent redundant automated texts.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Module 4: Dynamic Human vs AI Takeover Protocol -->
+                <div class="glass-panel rounded-2xl border border-slate-800 overflow-hidden">
+                    <button onclick="toggleAccordion('hb-mod4')" class="w-full p-5 text-left flex items-center justify-between bg-slate-900/40 hover:bg-slate-900/80 transition">
+                        <div class="flex items-center space-x-3">
+                            <span class="w-7 h-7 rounded-lg bg-purple-500/10 text-purple-400 font-mono text-xs font-bold flex items-center justify-center border border-purple-500/20">M4</span>
+                            <h3 class="text-sm font-bold text-slate-200">Module 4: Dynamic Human & AI Takeover Engine</h3>
+                        </div>
+                        <i id="hb-mod4-icon" class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200"></i>
+                    </button>
+                    <div id="hb-mod4" class="hidden p-5 border-t border-slate-800/80 space-y-3 text-xs text-slate-300 leading-relaxed bg-[#090d16]/40">
+                        <p><strong class="text-rose-400">🤝 Human Takeover:</strong> Click this on any lead row when staff needs to intervene manually. AI responses freeze immediately.</p>
+                        <p><strong class="text-emerald-400">🤖 AI Takeover:</strong> When staff finishes chatting, click "AI Takeover". The AI scans all messages sent during human takeover to resume automated conversation smoothly.</p>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- MIGRATION SQL VIEWER MODAL -->
+    <div id="migration-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="glass-panel w-full max-w-2xl rounded-2xl p-6 space-y-5 border border-purple-500/30 shadow-2xl">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <div class="flex items-center space-x-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-purple-500/10 text-purple-400 flex items-center justify-center">
+                        <i class="fa-solid fa-code-branch text-sm"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold text-slate-100">Railway PostgreSQL Migration Script</h3>
+                        <p class="text-xs text-slate-400">Run this query in Railway PostgreSQL to support Stage 3 & Stage 4 Community Tracking</p>
+                    </div>
+                </div>
+                <button onclick="closeMigrationModal()" class="text-slate-400 hover:text-white transition"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+
+            <div class="space-y-2">
+                <p class="text-xs text-slate-300">Copy and run this SQL inside Railway PostgreSQL <code class="text-orange-400 font-mono">Query</code> tab:</p>
+                <div class="relative">
+                    <pre class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-[11px] font-mono text-purple-300 overflow-x-auto leading-relaxed">
+-- Add Community Onboarding columns to prospects table
+ALTER TABLE prospects 
+ADD COLUMN IF NOT EXISTS joined_community BOOLEAN DEFAULT FALSE,
+ADD COLUMN IF NOT EXISTS joined_community_at TIMESTAMP,
+ADD COLUMN IF NOT EXISTS acknowledged_by VARCHAR(100),
+ADD COLUMN IF NOT EXISTS interest_level VARCHAR(50) DEFAULT 'Unknown';
+
+-- Create Stage Index for fast querying
+CREATE INDEX IF NOT EXISTS idx_prospects_stage ON prospects(current_stage);
+                    </pre>
+                    <button onclick="copyMigrationSQL()" class="absolute top-3 right-3 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 font-semibold rounded-lg border border-slate-700 transition">
+                        <i class="fa-solid fa-copy text-purple-400"></i> Copy SQL
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex justify-end pt-2">
+                <button onclick="closeMigrationModal()" class="px-5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-xl">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SETTINGS & CONNECTION CONFIGURATION MODAL -->
+    <div id="settings-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="glass-panel w-full max-w-2xl rounded-2xl p-6 space-y-5 border border-slate-700/80 shadow-2xl">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <div class="flex items-center space-x-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-orange-500/10 text-orange-400 flex items-center justify-center">
+                        <i class="fa-solid fa-sliders text-sm"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold text-slate-100">Railway PostgreSQL & API Setup</h3>
+                        <p class="text-xs text-slate-400">Client-side persistence in LocalStorage</p>
+                    </div>
+                </div>
+                <button onclick="closeSettingsModal()" class="text-slate-400 hover:text-white transition"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                <div>
+                    <label class="block font-semibold text-slate-300 mb-1">Railway PostgreSQL Host</label>
+                    <input type="text" id="cfg-pg-host" class="w-full bg-[#090d16] border border-slate-800 rounded-xl px-3 py-2 text-slate-200 font-mono outline-none focus:border-orange-500" placeholder="monorail.proxy.rlwy.net">
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-slate-300 mb-1">Assigned Public Port</label>
+                    <input type="text" id="cfg-pg-port" class="w-full bg-[#090d16] border border-slate-800 rounded-xl px-3 py-2 text-slate-200 font-mono outline-none focus:border-orange-500" placeholder="58492">
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-slate-300 mb-1">Database Name</label>
+                    <input type="text" id="cfg-pg-dbname" class="w-full bg-[#090d16] border border-slate-800 rounded-xl px-3 py-2 text-slate-200 font-mono outline-none focus:border-orange-500" placeholder="railway">
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-slate-300 mb-1">Database Password</label>
+                    <input type="password" id="cfg-pg-pass" class="w-full bg-[#090d16] border border-slate-800 rounded-xl px-3 py-2 text-slate-200 font-mono outline-none focus:border-orange-500" placeholder="••••••••••••">
+                </div>
+
+                <div class="sm:col-span-2">
+                    <label class="block font-semibold text-slate-300 mb-1">n8n Workflow 1 Webhook URL (Campaign Dispatch)</label>
+                    <input type="text" id="cfg-n8n-campaign" class="w-full bg-[#090d16] border border-slate-800 rounded-xl px-3 py-2 text-slate-200 font-mono outline-none focus:border-orange-500" placeholder="https://your-n8n.up.railway.app/webhook/trigger-campaign">
+                </div>
+            </div>
+
+            <div class="flex justify-between items-center pt-4 border-t border-slate-800">
+                <button onclick="resetDemoDataToDefaults()" class="text-rose-400 hover:text-rose-300 text-xs font-semibold">Reset Demo Data</button>
+                <div class="flex space-x-2">
+                    <button onclick="closeSettingsModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl">Cancel</button>
+                    <button onclick="saveSettingsConfig()" class="px-5 py-2 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white text-xs font-bold rounded-xl shadow">Save Configuration</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2 pointer-events-none"></div>
+
+    <!-- JAVASCRIPT LOGIC ENGINE -->
+    <script>
+        // Default System Prompt
+        const DEFAULT_PROMPT = `You are an expert AI Representative for the Moomoo Stock Mastery Programme led virtually by Professor Frank Siu. Your objective is to answer questions, handle skepticism transparently, and invite prospects into our free WhatsApp community. Keep every reply between 1 to 3 sentences maximum, end every message with ONE engaging question, and match the language used by the prospect. When the user asks to join or requests the group link, confirm enthusiastically and notify human staff.`;
+
+        // Seed Prospect Data with Stage 3 & Stage 4
+        const INITIAL_PROSPECTS = [
+            { 
+                id: 101, 
+                name: "Tan Wei Ming", 
+                phone_number: "6585791271", 
+                campaign_name: "Nov2026_Moomoo_Batch01", 
+                current_stage: "Stage 3: Ready for Group", 
+                interest_level: "High (Ready)",
+                human_handover_required: false, 
+                joined_community: false,
+                joined_community_at: null,
+                acknowledged_by: null,
+                updated_at: "2026-10-26 16:45" 
+            },
+            { 
+                id: 102, 
+                name: "Sarah Lim", 
+                phone_number: "6591234567", 
+                campaign_name: "Nov2026_Moomoo_Batch01", 
+                current_stage: "Stage 4: Joined Community", 
+                interest_level: "High",
+                human_handover_required: false, 
+                joined_community: true,
+                joined_community_at: "Oct 26, 2026, 17:15",
+                acknowledged_by: "Alex Support",
+                updated_at: "2026-10-26 17:15" 
+            },
+            { 
+                id: 103, 
+                name: "David Chen", 
+                phone_number: "60123456789", 
+                campaign_name: "Oct_Batch_02", 
+                current_stage: "Stage 2: Engaged", 
+                interest_level: "Moderate",
+                human_handover_required: false, 
+                joined_community: false,
+                joined_community_at: null,
+                acknowledged_by: null,
+                updated_at: "2026-10-26 14:10" 
+            },
+            { 
+                id: 104, 
+                name: "Ahmad Razak", 
+                phone_number: "60178889900", 
+                campaign_name: "Nov2026_Moomoo_Batch01", 
+                current_stage: "Stage 1: Awaiting Reply", 
+                interest_level: "Unknown",
+                human_handover_required: false, 
+                joined_community: false,
+                joined_community_at: null,
+                acknowledged_by: null,
+                updated_at: "2026-10-26 16:02" 
+            }
+        ];
+
+        const INITIAL_CHAT_LOGS = {
+            "6585791271": [
+                { sender: "bot", text: "Hi Tan Wei Ming, welcome to the Moomoo Stock Mastery Programme! Are you currently active in stock trading?", time: "16:30" },
+                { sender: "user", text: "Hi! Yes I want to join the WhatsApp group. Can you send me the link?", time: "16:45" },
+                { sender: "bot", text: "Awesome! I've notified our team coordinator to send over your private WhatsApp community invite link right away.", time: "16:45" }
+            ],
+            "6591234567": [
+                { sender: "bot", text: "Hi Sarah Lim, welcome to the Moomoo Stock Mastery Programme!", time: "17:00" },
+                { sender: "user", text: "Please send me the group link.", time: "17:05" },
+                { sender: "staff", text: "Hi Sarah, here is your invite link: https://chat.whatsapp.com/MoomooVIP2026", time: "17:10" },
+                { sender: "system", text: "🎉 Prospect joined the WhatsApp Community! AI automation permanently deactivated. (Acknowledged by Alex Support at Oct 26, 2026, 17:15)", time: "17:15" }
+            ]
+        };
+
+        const INITIAL_KB = [
+            { id: 1, category: "Pricing / FOC", question: "How much does it cost?", answer: "The program is 100% free of charge (FOC) for educational purposes with zero payment involved." },
+            { id: 2, category: "Compliance & MAS", question: "Is Moomoo regulated?", answer: "Yes, Moomoo is fully regulated by the MAS (Monetary Authority of Singapore) and is Shariah compliant." },
+            { id: 3, category: "Scam Defense", question: "Is this a scam?", answer: "Zero payment or financial obligation is required. It is strictly a free educational community led by Professor Frank Siu." },
+            { id: 4, category: "Community Join", question: "How do I join the WhatsApp group?", answer: "Our team coordinator will send over your private WhatsApp community invite link right away!" }
+        ];
+
+        // Reactive Application State
+        let prospects = JSON.parse(localStorage.getItem('mm_prospects')) || INITIAL_PROSPECTS;
+        let chatLogs = JSON.parse(localStorage.getItem('mm_chatlogs')) || INITIAL_CHAT_LOGS;
+        let knowledgeBase = JSON.parse(localStorage.getItem('mm_kb')) || INITIAL_KB;
+        let masterPrompt = localStorage.getItem('mm_prompt') || DEFAULT_PROMPT;
+        let outreachScript = localStorage.getItem('mm_outreach') || "Hi {{name}}, welcome to the Moomoo Stock Mastery Programme! Are you currently active in the stock market or looking to start your trading journey?";
+        let parsedCSVLeads = [];
+        let activeChatPhone = null;
+
+        let configSettings = JSON.parse(localStorage.getItem('mm_config')) || {
+            pgHost: "monorail.proxy.rlwy.net",
+            pgPort: "58492",
+            pgDbName: "railway",
+            pgPass: "",
+            n8nCampaign: "https://your-n8n.up.railway.app/webhook/trigger-campaign"
+        };
+
+        // DOM Initialization
+        window.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('master-system-prompt-input').value = masterPrompt;
+            document.getElementById('outreach-script-input').value = outreachScript;
+            updateScriptCharCount();
+
+            // Render Application
+            renderStats();
+            renderProspectsTable();
+            renderKBTable();
+            populateConfigModalInputs();
+
+            document.getElementById('outreach-script-input').addEventListener('input', updateScriptCharCount);
+        });
+
+        // Tab Navigation Switcher
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('bg-gradient-to-r', 'from-orange-600', 'to-amber-600', 'text-white', 'shadow-lg');
+                btn.classList.add('text-slate-400');
+            });
+
+            document.getElementById(`content-${tabId}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`nav-${tabId}`);
+            activeBtn.classList.add('bg-gradient-to-r', 'from-orange-600', 'to-amber-600', 'text-white', 'shadow-lg');
+            activeBtn.classList.remove('text-slate-400');
+        }
+
+        function toggleAccordion(id) {
+            const content = document.getElementById(id);
+            const icon = document.getElementById(`${id}-icon`);
+            if (content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+                if (icon) icon.classList.add('rotate-180');
+            } else {
+                content.classList.add('hidden');
+                if (icon) icon.classList.remove('rotate-180');
+            }
+        }
+
+        function downloadSampleCSV() {
+            const csvContent = "data:text/csv;charset=utf-8,name,phone_number\nTan Wei Ming,6585791271\nSarah Lim,6591234567\nDavid Chen,60123456789\nAhmad Razak,60178889900";
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "moomoo_leads_sample.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast("Downloaded sample CSV template!", "success");
+        }
+
+        // ==========================================
+        // TAB 1: OUTREACH & CSV PARSER
+        // ==========================================
+        function insertVariable(varName) {
+            const textarea = document.getElementById('outreach-script-input');
+            textarea.value += varName;
+            updateScriptCharCount();
+        }
+
+        function updateScriptCharCount() {
+            const txt = document.getElementById('outreach-script-input').value;
+            const smsParts = Math.ceil(txt.length / 160) || 1;
+            document.getElementById('script-char-count').innerText = `${txt.length} characters | ~${smsParts} SMS parts`;
+        }
+
+        function saveOutreachTemplate() {
+            outreachScript = document.getElementById('outreach-script-input').value;
+            localStorage.setItem('mm_outreach', outreachScript);
+            showToast("Outreach template saved!", "success");
+        }
+
+        function handleCSVFile(file) {
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) { parseCSVText(e.target.result); };
+            reader.readAsText(file);
+        }
+
+        function parseRawTextLeads(val) { parseCSVText(val); }
+
+        function parseCSVText(text) {
+            const lines = text.split('\n');
+            parsedCSVLeads = [];
+            
+            lines.forEach((line, index) => {
+                if (!line.trim()) return;
+                if (index === 0 && (line.toLowerCase().includes('name') || line.toLowerCase().includes('phone'))) return;
+                
+                const parts = line.split(',').map(p => p.trim());
+                if (parts.length >= 2 && parts[0] && parts[1]) {
+                    let phone = parts[1].replace(/[^0-9]/g, '');
+                    if (!phone.startsWith('65') && !phone.startsWith('60') && phone.length === 8) {
+                        phone = '65' + phone;
+                    }
+
+                    parsedCSVLeads.push({ name: parts[0], phone_number: phone });
+                }
+            });
+
+            document.getElementById('parsed-leads-count-badge').innerText = `${parsedCSVLeads.length} contacts`;
+            renderParsedPreview();
+            if(parsedCSVLeads.length > 0) showToast(`Parsed ${parsedCSVLeads.length} leads successfully`, "info");
+        }
+
+        function renderParsedPreview() {
+            const tbody = document.getElementById('parsed-preview-tbody');
+            const campaignName = document.getElementById('campaign-name-input').value || 'Nov2026_Batch01';
+            
+            if (parsedCSVLeads.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-500 font-sans italic">No CSV uploaded. Upload a CSV or paste leads above to inspect rows.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = parsedCSVLeads.map((item, idx) => `
+                <tr class="hover:bg-slate-900/50">
+                    <td class="p-3 text-slate-500">${idx + 1}</td>
+                    <td class="p-3 font-semibold text-slate-200">${item.name}</td>
+                    <td class="p-3 text-orange-400 font-mono">${item.phone_number}</td>
+                    <td class="p-3 text-slate-400">${campaignName}</td>
+                    <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold font-mono">E.164 Validated</span></td>
+                </tr>
+            `).join('');
+        }
+
+        function clearParsedPreview() {
+            parsedCSVLeads = [];
+            document.getElementById('parsed-leads-count-badge').innerText = "0 contacts";
+            renderParsedPreview();
+        }
+
+        function launchOutboundCampaign() {
+            const campaignName = document.getElementById('campaign-name-input').value;
+            
+            if (parsedCSVLeads.length === 0) {
+                parsedCSVLeads = [
+                    { name: "Kenneth Wong", phone_number: "6598881122" },
+                    { name: "Lin Shu Jing", phone_number: "60193334455" }
+                ];
+            }
+
+            parsedCSVLeads.forEach(lead => {
+                const existing = prospects.find(p => p.phone_number === lead.phone_number);
+                if (!existing) {
+                    prospects.unshift({
+                        id: Date.now() + Math.floor(Math.random() * 1000),
+                        name: lead.name,
+                        phone_number: lead.phone_number,
+                        campaign_name: campaignName,
+                        current_stage: "Stage 1: Outreached",
+                        interest_level: "Unknown",
+                        human_handover_required: false,
+                        joined_community: false,
+                        joined_community_at: null,
+                        acknowledged_by: null,
+                        updated_at: new Date().toISOString().slice(0, 16).replace('T', ' ')
+                    });
+                    
+                    chatLogs[lead.phone_number] = [
+                        { sender: "bot", text: outreachScript.replace('{{name}}', lead.name).replace('{{campaign}}', campaignName), time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) }
+                    ];
+                }
+            });
+
+            localStorage.setItem('mm_prospects', JSON.stringify(prospects));
+            localStorage.setItem('mm_chatlogs', JSON.stringify(chatLogs));
+
+            renderStats();
+            renderProspectsTable();
+            showToast(`🚀 Campaign '${campaignName}' launched to ${parsedCSVLeads.length} leads!`, "success");
+        }
+
+        // ==========================================
+        // TAB 2: CRM & COMMUNITY ONBOARDING ENGINE
+        // ==========================================
+        function renderStats() {
+            document.getElementById('stat-total').innerText = prospects.length;
+            document.getElementById('stat-outreached').innerText = prospects.filter(p => p.current_stage.includes('Stage 1')).length;
+            document.getElementById('stat-engaged').innerText = prospects.filter(p => p.current_stage === 'Stage 2: Engaged' && !p.human_handover_required).length;
+            document.getElementById('stat-ready-group').innerText = prospects.filter(p => p.current_stage === 'Stage 3: Ready for Group').length;
+            document.getElementById('stat-joined').innerText = prospects.filter(p => p.joined_community).length;
+            document.getElementById('stat-handover').innerText = prospects.filter(p => p.human_handover_required).length;
+        }
+
+        function renderProspectsTable() {
+            const tbody = document.getElementById('crm-table-tbody');
+            const search = document.getElementById('crm-search-input').value.toLowerCase().trim();
+            const stageFilter = document.getElementById('crm-stage-filter').value;
+
+            const filtered = prospects.filter(p => {
+                const matchSearch = p.name.toLowerCase().includes(search) || p.phone_number.includes(search);
+                const matchStage = (stageFilter === 'ALL') || 
+                                   (stageFilter === 'Human Handover' ? p.human_handover_required : p.current_stage === stageFilter);
+                return matchSearch && matchStage;
+            });
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="3" class="p-6 text-center text-slate-500 italic">No matching prospects found for '${search}'.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(p => {
+                let badgeClass = "bg-amber-500/10 text-amber-400 border-amber-500/20";
+                if (p.current_stage === "Stage 2: Engaged" && !p.human_handover_required) badgeClass = "bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
+                if (p.current_stage === "Stage 3: Ready for Group") badgeClass = "bg-amber-500/20 text-amber-300 border-amber-400 font-bold animate-pulse";
+                if (p.joined_community) badgeClass = "bg-emerald-500/20 text-emerald-300 border-emerald-400 font-bold";
+                if (p.human_handover_required) badgeClass = "bg-rose-500/10 text-rose-400 border-rose-500/20";
+
+                const isSelected = p.phone_number === activeChatPhone ? 'bg-slate-800/90 border-l-4 border-orange-500' : 'hover:bg-slate-900/60';
+
+                return `
+                    <tr onclick="selectLeadForChat('${p.phone_number}')" class="cursor-pointer transition ${isSelected}">
+                        <td class="p-3">
+                            <p class="font-bold text-slate-100">${p.name}</p>
+                            <p class="font-mono text-[10px] text-slate-400">+${p.phone_number}</p>
+                        </td>
+                        <td class="p-3">
+                            <span class="px-2 py-0.5 rounded text-[10px] border ${badgeClass}">
+                                ${p.joined_community ? `🎉 Joined (${p.joined_community_at})` : (p.human_handover_required ? '⚠️ Human Active' : p.current_stage)}
+                            </span>
+                        </td>
+                        <td class="p-3 text-right space-x-1">
+                            ${!p.joined_community ? `
+                                <button onclick="acknowledgeCommunityJoined('${p.phone_number}', event)" class="px-2 py-1 text-[10px] rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white border border-emerald-400 font-bold shadow-sm transition">
+                                    ✅ Joined Group
+                                </button>
+                                <button onclick="toggleTakeoverStatus('${p.phone_number}', event)" class="px-2 py-1 text-[10px] rounded-lg border ${p.human_handover_required ? 'bg-emerald-700 text-white' : 'bg-slate-800 text-rose-300 border-slate-700'} transition">
+                                    ${p.human_handover_required ? '🤖 AI Takeover' : '🤝 Handover'}
+                                </button>
+                            ` : `
+                                <span class="text-[10px] font-mono text-emerald-400 font-semibold px-2 py-1 bg-emerald-950/60 rounded border border-emerald-800">
+                                    <i class="fa-solid fa-lock text-[9px]"></i> AI Deactivated
+                                </span>
+                            `}
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function filterLeadsTable() { renderProspectsTable(); }
+
+        // ACKNOWLEDGE JOINED COMMUNITY BUTTON LOGIC
+        function acknowledgeCommunityJoined(phone, e) {
+            if (e) e.stopPropagation();
+            const prospect = prospects.find(p => p.phone_number === phone);
+            if (!prospect) return;
+
+            if (confirm(`Confirm that ${prospect.name} (+${prospect.phone_number}) has joined the WhatsApp Community group? This will permanently deactivate AI automation.`)) {
+                const timestamp = new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false });
+                
+                prospect.current_stage = "Stage 4: Joined Community";
+                prospect.joined_community = true;
+                prospect.joined_community_at = timestamp;
+                prospect.acknowledged_by = "Staff Agent";
+                prospect.human_handover_required = false;
+
+                // Log system event in chat
+                if (!chatLogs[phone]) chatLogs[phone] = [];
+                chatLogs[phone].push({
+                    sender: "system",
+                    text: `🎉 Prospect joined the WhatsApp Community! AI automation permanently deactivated. (Acknowledged at ${timestamp})`,
+                    time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+                });
+
+                localStorage.setItem('mm_prospects', JSON.stringify(prospects));
+                localStorage.setItem('mm_chatlogs', JSON.stringify(chatLogs));
+
+                renderStats();
+                renderProspectsTable();
+                if (activeChatPhone === phone) selectLeadForChat(phone);
+
+                showToast(`🎉 ${prospect.name} acknowledged! Stage updated to Joined Community.`, "success");
+            }
+        }
+
+        function toggleTakeoverStatus(phone, e) {
+            if (e) e.stopPropagation();
+            const prospect = prospects.find(p => p.phone_number === phone);
+            if (!prospect || prospect.joined_community) return;
+
+            if (!prospect.human_handover_required) {
+                prospect.human_handover_required = true;
+                prospect.current_stage = "Human Handover";
+                showToast(`🤝 Human Takeover initiated for ${prospect.name}`, "info");
+            } else {
+                prospect.human_handover_required = false;
+                prospect.current_stage = "Stage 2: Engaged";
+                analyzeAndResumeAIChat(phone);
+                showToast(`🤖 AI Takeover activated for ${prospect.name}!`, "success");
+            }
+
+            localStorage.setItem('mm_prospects', JSON.stringify(prospects));
+            renderStats();
+            renderProspectsTable();
+            if (activeChatPhone === phone) selectLeadForChat(phone);
+        }
+
+        function toggleHeaderTakeover() {
+            if (activeChatPhone) toggleTakeoverStatus(activeChatPhone);
+        }
+
+        function analyzeAndResumeAIChat(phone) {
+            const history = chatLogs[phone] || [];
+            const prospect = prospects.find(p => p.phone_number === phone);
+            const prospectName = prospect ? prospect.name : "there";
+            const lastStaffMsg = history.filter(m => m.sender === 'staff').pop();
+
+            let aiCatchupResponse = lastStaffMsg ? 
+                `Thanks for confirming with our team, ${prospectName}! I'm back as your Moomoo assistant. Shall I send over your VIP WhatsApp group link now?` :
+                `I am back online as your 24/7 Moomoo Stock Mastery AI assistant! How can I help you today?`;
+
+            setTimeout(() => {
+                if (!chatLogs[phone]) chatLogs[phone] = [];
+                chatLogs[phone].push({
+                    sender: "bot",
+                    text: aiCatchupResponse,
+                    time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+                });
+                localStorage.setItem('mm_chatlogs', JSON.stringify(chatLogs));
+                if (activeChatPhone === phone) renderChatBubbles(phone);
+            }, 600);
+        }
+
+        function selectLeadForChat(phone) {
+            activeChatPhone = phone;
+            renderProspectsTable();
+            const prospect = prospects.find(p => p.phone_number === phone);
+            
+            document.getElementById('chat-active-name').innerText = prospect ? prospect.name : phone;
+            document.getElementById('chat-active-phone').innerText = `+${phone}`;
+            
+            const ackBtn = document.getElementById('chat-header-ack-btn');
+            const headerBtn = document.getElementById('chat-header-takeover-btn');
+            const modeText = document.getElementById('chat-mode-status-text');
+            const inputField = document.getElementById('sim-user-input');
+
+            if (prospect && prospect.joined_community) {
+                ackBtn.classList.add('hidden');
+                headerBtn.classList.add('hidden');
+                modeText.className = "text-emerald-400 font-mono flex items-center space-x-1";
+                modeText.innerHTML = `<span>🎉 Stage 4: Joined Community — AI Locked (${prospect.joined_community_at})</span>`;
+                inputField.disabled = true;
+                inputField.placeholder = "Lead onboarded — AI de-activated.";
+            } else {
+                ackBtn.classList.remove('hidden');
+                headerBtn.classList.remove('hidden');
+                inputField.disabled = false;
+
+                if (prospect && prospect.human_handover_required) {
+                    headerBtn.innerText = "🤖 AI Takeover";
+                    headerBtn.className = "px-2 py-1 text-[10px] font-bold rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white border border-emerald-400 transition shadow-sm";
+                    modeText.className = "text-rose-400 font-mono flex items-center space-x-1";
+                    modeText.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-rose-400 animate-pulse"></span><span>🤝 Mode: Human Takeover Active (Staff Mode)</span>`;
+                    inputField.placeholder = "Type message as Sales Representative...";
+                } else {
+                    headerBtn.innerText = "🤝 Human Takeover";
+                    headerBtn.className = "px-2 py-1 text-[10px] font-bold rounded-lg bg-slate-800 hover:bg-slate-700 text-rose-300 border border-slate-700 transition shadow-sm";
+                    modeText.className = "text-emerald-400 font-mono flex items-center space-x-1";
+                    modeText.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span><span>🤖 Mode: AI Automated Mode (24/7 Agent Active)</span>`;
+                    inputField.placeholder = "Type prospect reply to test AI intent...";
+                }
+            }
+
+            renderChatBubbles(phone);
+        }
+
+        function renderChatBubbles(phone) {
+            const container = document.getElementById('chat-messages-container');
+            const messages = chatLogs[phone] || [];
+
+            if (messages.length === 0) {
+                container.innerHTML = `<div class="text-center text-xs text-slate-500 py-20">No chat history found for this lead.</div>`;
+                return;
+            }
+
+            container.innerHTML = messages.map(m => {
+                if (m.sender === 'system') {
+                    return `
+                        <div class="flex justify-center my-2">
+                            <span class="text-[10px] bg-emerald-950/80 text-emerald-300 border border-emerald-700/80 px-3 py-1.5 rounded-full font-mono text-center max-w-[90%] shadow">
+                                ${m.text}
+                            </span>
+                        </div>
+                    `;
+                }
+
+                const isUser = m.sender === 'user';
+                const isStaff = m.sender === 'staff';
+
+                let bubbleClass = "bg-slate-800/90 text-slate-200 rounded-tl-none border border-slate-700/80";
+                let alignClass = "items-start";
+                let senderLabel = "🤖 Moomoo AI Bot";
+
+                if (isUser) {
+                    bubbleClass = "bg-gradient-to-r from-orange-600 to-amber-600 text-white rounded-tr-none";
+                    alignClass = "items-end";
+                    senderLabel = "📱 Lead Prospect";
+                } else if (isStaff) {
+                    bubbleClass = "bg-rose-950/90 text-rose-100 rounded-tl-none border border-rose-800/80";
+                    alignClass = "items-start";
+                    senderLabel = "🤝 Human Staff";
+                }
+
+                return `
+                    <div class="flex flex-col ${alignClass}">
+                        <span class="text-[9px] font-mono text-slate-500 mb-1 px-1">${senderLabel}</span>
+                        <div class="max-w-[85%] px-3.5 py-2.5 rounded-2xl text-xs ${bubbleClass} shadow-md">
+                            <p class="leading-relaxed">${m.text}</p>
+                            <span class="text-[9px] opacity-60 block text-right mt-1 font-mono">${m.time}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function handleChatInputSubmit() {
+            const input = document.getElementById('sim-user-input');
+            const text = input.value.trim();
+            if (!text || !activeChatPhone) return;
+
+            const prospect = prospects.find(p => p.phone_number === activeChatPhone);
+            if (prospect && prospect.joined_community) return;
+
+            const isHumanMode = prospect && prospect.human_handover_required;
+            const currentTime = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+            if (!chatLogs[activeChatPhone]) chatLogs[activeChatPhone] = [];
+
+            if (isHumanMode) {
+                chatLogs[activeChatPhone].push({ sender: 'staff', text: text, time: currentTime });
+                input.value = '';
+                renderChatBubbles(activeChatPhone);
+                localStorage.setItem('mm_chatlogs', JSON.stringify(chatLogs));
+            } else {
+                chatLogs[activeChatPhone].push({ sender: 'user', text: text, time: currentTime });
+                input.value = '';
+                renderChatBubbles(activeChatPhone);
+
+                // Check intent for group join
+                const textLower = text.toLowerCase();
+                const intentToJoin = textLower.includes('join') || textLower.includes('link') || textLower.includes('group') || textLower.includes('whatsapp');
+
+                if (intentToJoin) {
+                    prospect.current_stage = "Stage 3: Ready for Group";
+                    prospect.interest_level = "High (Ready)";
+                    showToast(`🎯 Intent detected! ${prospect.name} moved to Stage 3: Ready for Group.`, "success");
+                } else {
+                    if(prospect.current_stage !== "Stage 3: Ready for Group") prospect.current_stage = "Stage 2: Engaged";
+                }
+
+                localStorage.setItem('mm_prospects', JSON.stringify(prospects));
+                renderStats();
+                renderProspectsTable();
+
+                setTimeout(() => {
+                    let botReply = intentToJoin ? 
+                        "Awesome! I've notified our team coordinator to send over your private WhatsApp community invite link right away." : 
+                        generateAIReply(text);
+
+                    chatLogs[activeChatPhone].push({ sender: 'bot', text: botReply, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) });
+                    localStorage.setItem('mm_chatlogs', JSON.stringify(chatLogs));
+                    renderChatBubbles(activeChatPhone);
+                }, 750);
+            }
+        }
+
+        function generateAIReply(userQuery) {
+            const queryLower = userQuery.toLowerCase();
+            for (let item of knowledgeBase) {
+                if (queryLower.includes(item.question.toLowerCase().replace('is this ', '').replace('?', ''))) {
+                    return item.answer + " Would you like to check out our free WhatsApp community session?";
+                }
+            }
+            return "Professor Frank Siu shares market insights live in our WhatsApp group. Would you like to get your free invite link?";
+        }
+
+        // ==========================================
+        // TAB 3: AI BRAIN & KNOWLEDGE BASE
+        // ==========================================
+        function saveMasterSystemPrompt() {
+            masterPrompt = document.getElementById('master-system-prompt-input').value;
+            localStorage.setItem('mm_prompt', masterPrompt);
+            showToast("Master System Prompt updated!", "success");
+        }
+
+        function resetDefaultPrompt() {
+            document.getElementById('master-system-prompt-input').value = DEFAULT_PROMPT;
+            saveMasterSystemPrompt();
+        }
+
+        function handleTxtToneFile(file) {
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) { analyzeToneTxt(e.target.result); };
+            reader.readAsText(file);
+        }
+
+        function analyzeToneTxt(chatText) {
+            const length = chatText.length;
+            const lineCount = chatText.split('\n').length || 1;
+            const avgMsgLen = Math.round(length / lineCount);
+
+            const summary = `Extracted Tone Guidelines: Direct & welcoming (~${avgMsgLen} chars/msg), concise question-based closures.`;
+            document.getElementById('tone-result-summary').innerText = summary;
+            document.getElementById('tone-analysis-box').classList.remove('hidden');
+
+            const promptInput = document.getElementById('master-system-prompt-input');
+            promptInput.value += `\n\n# EXTRACTED TONE RULE:\nKeep replies concise (~${avgMsgLen} chars), friendly, and ending with ONE question.`;
+            saveMasterSystemPrompt();
+
+            showToast("Tone rules extracted to System Prompt!", "success");
+        }
+
+        function addSingleFAQRule() {
+            const category = document.getElementById('faq-category-select').value;
+            const question = document.getElementById('faq-question-input').value.trim();
+            const answer = document.getElementById('faq-answer-input').value.trim();
+
+            if (!question || !answer) {
+                showToast("Please enter Question and Answer fields.", "error");
+                return;
+            }
+
+            knowledgeBase.unshift({ id: Date.now(), category, question, answer });
+            localStorage.setItem('mm_kb', JSON.stringify(knowledgeBase));
+            renderKBTable();
+
+            document.getElementById('faq-question-input').value = '';
+            document.getElementById('faq-answer-input').value = '';
+            showToast("FAQ rule saved to Knowledge Base!", "success");
+        }
+
+        function renderKBTable() {
+            const tbody = document.getElementById('kb-table-tbody');
+            document.getElementById('kb-count-badge').innerText = `${knowledgeBase.length} rules active`;
+
+            if (knowledgeBase.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="3" class="p-6 text-center text-slate-500 italic">No FAQ rules created yet.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = knowledgeBase.map(kb => `
+                <tr class="hover:bg-slate-900/50">
+                    <td class="p-2.5">
+                        <span class="px-2 py-0.5 rounded text-[10px] bg-slate-800 text-orange-400 font-semibold border border-slate-700 font-mono">${kb.category}</span>
+                    </td>
+                    <td class="p-2.5">
+                        <p class="font-bold text-slate-200 text-[11px]">Q: ${kb.question}</p>
+                        <p class="text-slate-400 text-[10px] mt-0.5">A: ${kb.answer}</p>
+                    </td>
+                    <td class="p-2.5 text-right">
+                        <button onclick="deleteFAQRule(${kb.id})" class="text-rose-400 hover:text-rose-300 px-2 py-1 rounded bg-slate-800 text-[10px] transition">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function deleteFAQRule(id) {
+            knowledgeBase = knowledgeBase.filter(k => k.id !== id);
+            localStorage.setItem('mm_kb', JSON.stringify(knowledgeBase));
+            renderKBTable();
+            showToast("FAQ rule deleted", "info");
+        }
+
+        function handleBulkFAQCSV(file) {
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const lines = e.target.result.split('\n');
+                let count = 0;
+                lines.forEach((line, idx) => {
+                    if (idx === 0 && line.toLowerCase().includes('category')) return;
+                    const parts = line.split(',').map(p => p.trim());
+                    if (parts.length >= 3) {
+                        knowledgeBase.unshift({ id: Date.now() + idx, category: parts[0], question: parts[1], answer: parts[2] });
+                        count++;
+                    }
+                });
+                localStorage.setItem('mm_kb', JSON.stringify(knowledgeBase));
+                renderKBTable();
+                showToast(`Bulk imported ${count} FAQ rules!`, "success");
+            };
+            reader.readAsText(file);
+        }
+
+        // ==========================================
+        // MODALS & UTILITIES
+        // ==========================================
+        function openMigrationModal() { document.getElementById('migration-modal').classList.remove('hidden'); }
+        function closeMigrationModal() { document.getElementById('migration-modal').classList.add('hidden'); }
+
+        function copyMigrationSQL() {
+            const sql = `-- Add Community Onboarding columns to prospects table
+ALTER TABLE prospects 
+ADD COLUMN IF NOT EXISTS joined_community BOOLEAN DEFAULT FALSE,
+ADD COLUMN IF NOT EXISTS joined_community_at TIMESTAMP,
+ADD COLUMN IF NOT EXISTS acknowledged_by VARCHAR(100),
+ADD COLUMN IF NOT EXISTS interest_level VARCHAR(50) DEFAULT 'Unknown';
+
+-- Create Stage Index for fast querying
+CREATE INDEX IF NOT EXISTS idx_prospects_stage ON prospects(current_stage);`;
+
+            document.execCommand('copy');
+            showToast("SQL script copied to clipboard!", "success");
+        }
+
+        function openSettingsModal() { document.getElementById('settings-modal').classList.remove('hidden'); }
+        function closeSettingsModal() { document.getElementById('settings-modal').classList.add('hidden'); }
+
+        function populateConfigModalInputs() {
+            document.getElementById('cfg-pg-host').value = configSettings.pgHost;
+            document.getElementById('cfg-pg-port').value = configSettings.pgPort;
+            document.getElementById('cfg-pg-dbname').value = configSettings.pgDbName;
+            document.getElementById('cfg-pg-pass').value = configSettings.pgPass;
+            document.getElementById('cfg-n8n-campaign').value = configSettings.n8nCampaign;
+        }
+
+        function saveSettingsConfig() {
+            configSettings.pgHost = document.getElementById('cfg-pg-host').value;
+            configSettings.pgPort = document.getElementById('cfg-pg-port').value;
+            configSettings.pgDbName = document.getElementById('cfg-pg-dbname').value;
+            configSettings.pgPass = document.getElementById('cfg-pg-pass').value;
+            configSettings.n8nCampaign = document.getElementById('cfg-n8n-campaign').value;
+
+            localStorage.setItem('mm_config', JSON.stringify(configSettings));
+            closeSettingsModal();
+            showToast("Configuration saved!", "success");
+        }
+
+        function resetDemoDataToDefaults() {
+            localStorage.clear();
+            location.reload();
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            let bg = 'bg-slate-900 border-slate-700 text-slate-200';
+            if (type === 'success') bg = 'bg-emerald-950/90 border-emerald-600 text-emerald-200';
+            if (type === 'error') bg = 'bg-rose-950/90 border-rose-600 text-rose-200';
+
+            toast.className = `px-4 py-3 rounded-xl border text-xs font-semibold shadow-2xl backdrop-blur-md transition-all duration-300 transform translate-y-2 pointer-events-auto flex items-center space-x-2.5 ${bg}`;
+            toast.innerHTML = `
+                <i class="fa-solid ${type === 'success' ? 'fa-circle-check text-emerald-400' : 'fa-circle-info text-orange-400'} text-sm"></i>
+                <span>${message}</span>
+            `;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-4');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
