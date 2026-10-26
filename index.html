@@ -14,7 +14,7 @@
   <!-- Passcode Protection Script -->
   <script>
     (function() {
-      const MASTER_PIN = "245689168"; // Set your team passcode here
+      const MASTER_PIN = "8888"; // Set your team passcode here
       if (!sessionStorage.getItem("moomoo_auth")) {
         const pin = prompt("🔒 Restricted Access: Enter Team Passcode to open Moomoo Dashboard:");
         if (pin === MASTER_PIN) {
@@ -244,10 +244,10 @@
       margin-bottom: 16px;
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
-      scrollbar-width: none; /* Firefox */
+      scrollbar-width: none;
       padding-bottom: 4px;
     }
-    .tabs-bar::-webkit-scrollbar { display: none; } /* Chrome/Safari */
+    .tabs-bar::-webkit-scrollbar { display: none; }
 
     .tab-btn {
       padding: 10px 18px;
@@ -491,12 +491,10 @@
       display: block;
     }
 
-    /* ==========================================================================
-       RESPONSIVE MEDIA QUERIES (Mobile & Tablet Layout Engine)
-       ========================================================================== */
+    /* Mobile & Tablet Layout Engine */
     @media (max-width: 1024px) {
       .crm-split-view {
-        grid-template-columns: 1fr; /* Stack CRM table and chat on tablets */
+        grid-template-columns: 1fr;
       }
       .grid-4 {
         grid-template-columns: repeat(2, 1fr);
@@ -514,17 +512,17 @@
         padding: 10px;
       }
       .grid-2, .grid-3, .grid-4 {
-        grid-template-columns: 1fr; /* Force 1-column layouts on smartphones */
+        grid-template-columns: 1fr;
       }
       .chat-container {
-        height: 380px; /* Adjust chat height for mobile screens */
+        height: 380px;
       }
       .card-header {
         flex-direction: column;
         align-items: flex-start;
       }
       .btn {
-        width: 100%; /* Full width buttons on mobile forms */
+        width: 100%;
       }
       .status-indicators {
         width: 100%;
@@ -831,10 +829,10 @@ Guidelines:
   </div>
 
   <script>
-    // State Management
+    // State Management - Neutral Sample Lead Names
     let prospects = [
-      { id: 1, name: "Tan Ah Kow", phone: "6591234567", stage: "Stage 2: AI Engaged", human: false, joined: false, history: [
-        { sender: "ai", text: "Hi Tan! Welcome to Moomoo Stock Mastery. Ready to get started?", time: "10:14" },
+      { id: 1, name: "Jason Wong", phone: "6591234567", stage: "Stage 2: AI Engaged", human: false, joined: false, history: [
+        { sender: "ai", text: "Hi Jason! Welcome to Moomoo Stock Mastery. Ready to get started?", time: "10:14" },
         { sender: "user", text: "Yes, how much is the course?", time: "10:15" },
         { sender: "ai", text: "The masterclass is completely complimentary! Would you like me to reserve your spot?", time: "10:15" }
       ]},
@@ -980,7 +978,6 @@ Guidelines:
       const timeStr = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
       p.history.push({ sender: 'user', text: text, time: timeStr });
 
-      // Auto stage 3 intent check
       if (text.toLowerCase().includes('group') || text.toLowerCase().includes('link') || text.toLowerCase().includes('join')) {
         p.stage = 'Stage 3: Ready for Group';
         p.history.push({ sender: 'ai', text: "Awesome! I've notified our team coordinator to send over your private WhatsApp group link.", time: timeStr });
@@ -1003,7 +1000,7 @@ Guidelines:
     function setStageFilter(stage) { currentStageFilter = stage; renderProspects(); }
 
     function downloadSampleCSV() {
-      const csvContent = "data:text/csv;charset=utf-8,phone_number,name\n6591234567,John Tan\n6585791271,Mary Lim";
+      const csvContent = "data:text/csv;charset=utf-8,phone_number,name\n6591234567,Alex Goh\n6585791271,Mary Lim";
       const encodedUri = encodeURI(csvContent);
       const link = document.createElement("a");
       link.setAttribute("href", encodedUri);
