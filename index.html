@@ -1653,4 +1653,26 @@ CREATE INDEX IF NOT EXISTS idx_prospects_stage ON prospects(current_stage);`;
         }
     </script>
 </body>
+<!-- Scroll all the way to the bottom of your file -->
+
+      <!-- PASTE THE SCRIPT RIGHT HERE -->
+      <script>
+        const MASTER_PIN = "245689168"; // Change "8888" to your preferred team password
+
+        window.addEventListener("DOMContentLoaded", () => {
+          let authenticated = sessionStorage.getItem("moomoo_auth");
+          if (!authenticated) {
+            let pin = prompt("🔒 Restricted Access: Enter Team Passcode to open Moomoo Dashboard:");
+            if (pin === MASTER_PIN) {
+              sessionStorage.setItem("moomoo_auth", "true");
+            } else {
+              alert("❌ Incorrect Passcode. Access Denied.");
+              document.body.innerHTML = "<h2 style='color:white;text-align:center;margin-top:20%;font-family:sans-serif;'>🔒 Unauthorized Access</h2>";
+            }
+          }
+        });
+      </script>
+
+    </body>
+  </html>    
 </html>
