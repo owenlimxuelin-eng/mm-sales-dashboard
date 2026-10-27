@@ -1018,4 +1018,100 @@ Guidelines:
     selectProspect(1);
   </script>
 </body>
+<!-- Tab Header & Live GMT+8 Clock -->
+<div style="background: #1e293b; color: #fff; padding: 20px; border-radius: 12px; font-family: sans-serif;">
+  <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; padding-bottom: 12px; margin-bottom: 20px;">
+    <h2>🤖 Bot Automation Settings</h2>
+    <div style="text-align: right;">
+      <span style="font-size: 12px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px;">Current System Time</span>
+      <div id="sgtClock" style="font-size: 20px; font-weight: bold; color: #38bdf8; font-family: monospace;">--:--:-- SGT (GMT+8)</div>
+    </div>
+  </div>
+
+  <form id="botSettingsForm">
+    <!-- Feature 1: Operating Hours -->
+    <div style="background: #0f172a; padding: 16px; border-radius: 8px; margin-bottom: 16px; border: 1px solid #334155;">
+      <h3 style="margin-top: 0; color: #f8fafc; font-size: 16px;">⏰ Feature 1: Operating Hours (GMT+8 Singapore Time)</h3>
+      <p style="color: #94a3b8; font-size: 13px;">The bot will only generate and send automated replies within this timeframe.</p>
+      
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+        <div>
+          <label style="display: block; color: #cbd5e1; font-size: 13px; margin-bottom: 6px;">Start Replying At (Hour):</label>
+          <select id="operatingStart" style="width: 100%; padding: 8px; border-radius: 6px; background: #1e293b; color: #fff; border: 1px solid #475569;">
+            <!-- Generated via JS (00:00 to 23:00) -->
+          </select>
+        </div>
+        <div>
+          <label style="display: block; color: #cbd5e1; font-size: 13px; margin-bottom: 6px;">Stop Replying At (Hour):</label>
+          <select id="operatingEnd" style="width: 100%; padding: 8px; border-radius: 6px; background: #1e293b; color: #fff; border: 1px solid #475569;">
+            <!-- Generated via JS (00:00 to 23:00) -->
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Feature 2: Random Reply Delay Range -->
+    <div style="background: #0f172a; padding: 16px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #334155;">
+      <h3 style="margin-top: 0; color: #f8fafc; font-size: 16px;">⏳ Feature 2: Human-like Random Delay Interval</h3>
+      <p style="color: #94a3b8; font-size: 13px;">Every reply will wait for a random duration inside this range before sending to simulate manual typing.</p>
+      
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+        <div>
+          <label style="display: block; color: #cbd5e1; font-size: 13px; margin-bottom: 6px;">Minimum Delay (Minutes):</label>
+          <input type="number" id="minDelay" min="0" max="60" value="2" style="width: 100%; padding: 8px; border-radius: 6px; background: #1e293b; color: #fff; border: 1px solid #475569;">
+        </div>
+        <div>
+          <label style="display: block; color: #cbd5e1; font-size: 13px; margin-bottom: 6px;">Maximum Delay (Minutes):</label>
+          <input type="number" id="maxDelay" min="1" max="120" value="15" style="width: 100%; padding: 8px; border-radius: 6px; background: #1e293b; color: #fff; border: 1px solid #475569;">
+        </div>
+      </div>
+    </div>
+
+    <button type="button" onclick="saveBotSettings()" style="background: #2563eb; color: #fff; padding: 10px 24px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;">
+      Save Bot Configuration
+    </button>
+  </form>
+</div>
+
+<script>
+  // 1. Live GMT+8 Singapore Clock
+  function updateSGTClock() {
+    const options = {
+      timeZone: 'Asia/Singapore',
+      hour12: false,
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    };
+    const nowStr = new Intl.DateTimeFormat('en-GB', options).format(new Date());
+    document.getElementById('sgtClock').innerText = `${nowStr} SGT (GMT+8)`;
+  }
+  setInterval(updateSGTClock, 1000);
+  updateSGTClock();
+
+  // Populate Hour Select Dropdowns
+  const startSelect = document.getElementById('operatingStart');
+  const endSelect = document.getElementById('operatingEnd');
+  for (let i = 0; i < 24; i++) {
+    const hourLabel = (i < 10 ? '0' + i : i) + ':00';
+    startSelect.options.add(new Option(hourLabel, i));
+    endSelect.options.add(new Option(hourLabel, i));
+  }
+  startSelect.value = 9;  // Default 09:00
+  endSelect.value = 21;  // Default 21:00
+
+  // 2. Save Settings to Backend API / Database
+  async function saveBotSettings() {
+    const payload = {
+      operating_start_hour: parseInt(document.getElementById('operatingStart').value),
+      operating_end_hour: parseInt(document.getElementById('operatingEnd').value),
+      min_delay_minutes: parseInt(document.getElementById('minDelay').value),
+      max_delay_minutes: parseInt(document.getElementById('maxDelay').value)
+    };
+
+    // Replace with your API endpoint or direct Postgres update query
+    console.log("Saving settings to PostgreSQL:", payload);
+    alert("Bot settings updated successfully!");
+  }
+</script>
 </html>
