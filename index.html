@@ -14,7 +14,7 @@
   <!-- Passcode Protection Script -->
   <script>
     (function() {
-      const MASTER_PIN = "245689168"; // Set your team passcode here
+      const MASTER_PIN = "245689168"; // Team passcode
       if (!sessionStorage.getItem("moomoo_auth")) {
         const pin = prompt("🔒 Restricted Access: Enter Team Passcode to open Moomoo Dashboard:");
         if (pin === MASTER_PIN) {
@@ -196,10 +196,7 @@
       white-space: nowrap;
     }
 
-    .btn-primary {
-      background: var(--accent-blue);
-      color: #fff;
-    }
+    .btn-primary { background: var(--accent-blue); color: #fff; }
     .btn-primary:hover { background: #2563eb; }
 
     .btn-secondary {
@@ -209,22 +206,11 @@
     }
     .btn-secondary:hover { background: rgba(255, 255, 255, 0.15); }
 
-    .btn-success {
-      background: var(--accent-green);
-      color: #fff;
-    }
+    .btn-success { background: var(--accent-green); color: #fff; }
     .btn-success:hover { background: #059669; }
 
-    .btn-warning {
-      background: var(--accent-gold);
-      color: #000;
-      font-weight: 700;
-    }
-
-    .btn-danger {
-      background: var(--accent-danger);
-      color: #fff;
-    }
+    .btn-warning { background: var(--accent-gold); color: #000; font-weight: 700; }
+    .btn-danger { background: var(--accent-danger); color: #fff; }
 
     /* Main Container & Scrollable Navigation Tabs */
     .main-container {
@@ -493,41 +479,19 @@
 
     /* Mobile & Tablet Layout Engine */
     @media (max-width: 1024px) {
-      .crm-split-view {
-        grid-template-columns: 1fr;
-      }
-      .grid-4 {
-        grid-template-columns: repeat(2, 1fr);
-      }
+      .crm-split-view { grid-template-columns: 1fr; }
+      .grid-4 { grid-template-columns: repeat(2, 1fr); }
     }
 
     @media (max-width: 768px) {
-      .app-header {
-        padding: 10px 14px;
-      }
-      .brand-title {
-        font-size: 0.95rem;
-      }
-      .main-container {
-        padding: 10px;
-      }
-      .grid-2, .grid-3, .grid-4 {
-        grid-template-columns: 1fr;
-      }
-      .chat-container {
-        height: 380px;
-      }
-      .card-header {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-      .btn {
-        width: 100%;
-      }
-      .status-indicators {
-        width: 100%;
-        justify-content: space-between;
-      }
+      .app-header { padding: 10px 14px; }
+      .brand-title { font-size: 0.95rem; }
+      .main-container { padding: 10px; }
+      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+      .chat-container { height: 380px; }
+      .card-header { flex-direction: column; align-items: flex-start; }
+      .btn { width: 100%; }
+      .status-indicators { width: 100%; justify-content: space-between; }
     }
   </style>
 </head>
@@ -561,19 +525,22 @@
   <!-- Main Container -->
   <main class="main-container">
 
-    <!-- Scrollable Navigation Tabs -->
+    <!-- Scrollable Navigation Tabs Bar -->
     <div class="tabs-bar">
-      <button class="tab-btn active" onclick="switchTab('tab-outreach')">
+      <button class="tab-btn active" onclick="switchTab('tab-outreach', this)">
         <i class="fa-solid fa-paper-plane"></i> 1. Outreach Launcher
       </button>
-      <button class="tab-btn" onclick="switchTab('tab-crm')">
+      <button class="tab-btn" onclick="switchTab('tab-crm', this)">
         <i class="fa-solid fa-users-gear"></i> 2. Lead Tracker & CRM
       </button>
-      <button class="tab-btn" onclick="switchTab('tab-ai')">
+      <button class="tab-btn" onclick="switchTab('tab-ai', this)">
         <i class="fa-solid fa-brain"></i> 3. AI Brain & FAQs
       </button>
-      <button class="tab-btn" onclick="switchTab('tab-handbook')">
-        <i class="fa-solid fa-book-open"></i> 4. User Handbook
+      <button class="tab-btn" onclick="switchTab('tab-bot', this)">
+        <i class="fa-solid fa-robot"></i> 4. Bot Automation
+      </button>
+      <button class="tab-btn" onclick="switchTab('tab-handbook', this)">
+        <i class="fa-solid fa-book-open"></i> 5. User Handbook
       </button>
     </div>
 
@@ -640,7 +607,6 @@
 
     <!-- TAB 2: CRM & LIVE CHAT (RESPONSIVE SPLIT VIEW) -->
     <div id="tab-crm" class="tab-content">
-      
       <!-- Metrics Bar -->
       <div class="grid-4">
         <div class="glass-card" style="padding:12px;">
@@ -652,7 +618,7 @@
           <div style="font-size:1.4rem; font-weight:800; color:var(--accent-blue);" id="kpi-engaged">2</div>
         </div>
         <div class="glass-card" style="padding:12px;">
-          <div style="font-size:11px; color:var(--text-gold);">Ready for Group</div>
+          <div style="font-size:11px; color:var(--accent-gold);">Ready for Group</div>
           <div style="font-size:1.4rem; font-weight:800; color:var(--accent-gold);" id="kpi-ready">1</div>
         </div>
         <div class="glass-card" style="padding:12px;">
@@ -674,7 +640,6 @@
 
       <!-- CRM Split View Layout -->
       <div class="crm-split-view">
-        
         <!-- Prospect Directory Table -->
         <div class="glass-card">
           <div class="card-header">
@@ -774,7 +739,69 @@ Guidelines:
       </div>
     </div>
 
-    <!-- TAB 4: OPERATIONAL HANDBOOK -->
+    <!-- TAB 4: BOT AUTOMATION SETTINGS -->
+    <div id="tab-bot" class="tab-content">
+      <div class="glass-card">
+        <div class="card-header">
+          <div>
+            <span class="card-title"><i class="fa-solid fa-robot"></i> Bot Automation Settings</span>
+            <p style="color: var(--text-muted); font-size: 12px; margin-top: 4px;">Configure dynamic operating hours and anti-spam randomized reply delays stored in PostgreSQL.</p>
+          </div>
+          <div style="text-align: right; background: rgba(15, 23, 42, 0.6); padding: 6px 14px; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+            <span style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; display: block;">System Time</span>
+            <div id="sgtClock" style="font-size: 16px; font-weight: 700; color: #38bdf8; font-family: 'JetBrains Mono', monospace;">--:--:-- SGT (GMT+8)</div>
+          </div>
+        </div>
+
+        <form id="botSettingsForm">
+          <div class="grid-2" style="margin-bottom: 16px;">
+            <!-- Feature 1: Operating Hours -->
+            <div style="background: rgba(15, 23, 42, 0.6); padding: 16px; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+              <h3 style="color: #fff; font-size: 14px; font-weight: 700; margin-bottom: 6px;">
+                <i class="fa-solid fa-clock" style="color: var(--accent-blue);"></i> Feature 1: Operating Hours (GMT+8)
+              </h3>
+              <p style="color: var(--text-muted); font-size: 12px; margin-bottom: 14px;">The bot will only generate and send automated replies within this timeframe.</p>
+              
+              <div class="form-group">
+                <label class="form-label">Start Replying At (Hour):</label>
+                <select id="operatingStart" class="form-control">
+                  <!-- Populated via JS -->
+                </select>
+              </div>
+              <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label">Stop Replying At (Hour):</label>
+                <select id="operatingEnd" class="form-control">
+                  <!-- Populated via JS -->
+                </select>
+              </div>
+            </div>
+
+            <!-- Feature 2: Random Delay Interval -->
+            <div style="background: rgba(15, 23, 42, 0.6); padding: 16px; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+              <h3 style="color: #fff; font-size: 14px; font-weight: 700; margin-bottom: 6px;">
+                <i class="fa-solid fa-hourglass-half" style="color: var(--accent-gold);"></i> Feature 2: Random Delay Interval
+              </h3>
+              <p style="color: var(--text-muted); font-size: 12px; margin-bottom: 14px;">Every reply waits for a random duration inside this range before sending to simulate manual typing.</p>
+              
+              <div class="form-group">
+                <label class="form-label">Minimum Delay (Minutes):</label>
+                <input type="number" id="minDelay" class="form-control" min="0" max="60" value="2">
+              </div>
+              <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label">Maximum Delay (Minutes):</label>
+                <input type="number" id="maxDelay" class="form-control" min="1" max="120" value="15">
+              </div>
+            </div>
+          </div>
+
+          <button type="button" class="btn btn-primary" onclick="saveBotSettings()">
+            <i class="fa-solid fa-floppy-disk"></i> Save Bot Configuration
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- TAB 5: OPERATIONAL HANDBOOK -->
     <div id="tab-handbook" class="tab-content">
       <div class="glass-card">
         <div class="card-header">
@@ -810,6 +837,16 @@ Guidelines:
             Click <b>🤝 Human Takeover</b> at any time to pause AI. When ready, click <b>🤖 AI Takeover</b> to allow the AI to catch up on human notes and resume automatically.
           </div>
         </div>
+
+        <div class="accordion-item" onclick="toggleAccordion(this)">
+          <div class="accordion-header">
+            <span>Module 4: Bot Automation & Operating Hours</span>
+            <i class="fa-solid fa-chevron-down"></i>
+          </div>
+          <div class="accordion-body">
+            Use <b>Tab 4 (Bot Automation)</b> to restrict auto-responses to business hours (GMT+8) and set randomized delays (e.g. 2 to 15 mins) to protect your WhatsApp account against spam triggers.
+          </div>
+        </div>
       </div>
     </div>
 
@@ -823,9 +860,9 @@ Guidelines:
     </div>
     <div class="form-group">
       <label class="form-label">n8n Railway Webhook Base URL</label>
-      <input type="text" id="cfg-n8n-url" class="form-control" value="https://n8n-production-xxxx.up.railway.app" />
+      <input type="text" id="cfg-n8n-url" class="form-control" value="https://n8n-production-1c55b.up.railway.app" />
     </div>
-    <button class="btn btn-primary" onclick="saveConfig()" style="width:100%;">Save Configuration</button>
+    <button class="btn btn-primary" onclick="toggleModal('config-modal')" style="width:100%;">Save Configuration</button>
   </div>
 
   <script>
@@ -850,10 +887,14 @@ Guidelines:
     let activeProspectId = 1;
     let currentStageFilter = 'ALL';
 
-    function switchTab(tabId) {
+    // Tab Switching Function
+    function switchTab(tabId, btnElement) {
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
       document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-      event.currentTarget.classList.add('active');
+      
+      if (btnElement) {
+        btnElement.classList.add('active');
+      }
       document.getElementById(tabId).classList.add('active');
     }
 
@@ -1013,105 +1054,72 @@ Guidelines:
       el.classList.toggle('active');
     }
 
+    // ==================== BOT AUTOMATION SETTINGS ENGINE ==================== //
+
+    // 1. Live GMT+8 Singapore/Malaysia Clock
+    function updateSGTClock() {
+      const options = {
+        timeZone: 'Asia/Singapore',
+        hour12: false,
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      };
+      const nowStr = new Intl.DateTimeFormat('en-GB', options).format(new Date());
+      const clockEl = document.getElementById('sgtClock');
+      if (clockEl) {
+        clockEl.innerText = `${nowStr} SGT (GMT+8)`;
+      }
+    }
+    setInterval(updateSGTClock, 1000);
+    updateSGTClock();
+
+    // 2. Populate Hour Dropdowns (00:00 to 23:00)
+    const startSelect = document.getElementById('operatingStart');
+    const endSelect = document.getElementById('operatingEnd');
+    if (startSelect && endSelect) {
+      for (let i = 0; i < 24; i++) {
+        const hourLabel = (i < 10 ? '0' + i : i) + ':00';
+        startSelect.options.add(new Option(hourLabel, i));
+        endSelect.options.add(new Option(hourLabel, i));
+      }
+      startSelect.value = 9;  // Default 09:00 AM
+      endSelect.value = 21;  // Default 09:00 PM (21:00)
+    }
+
+    // 3. Save Settings to Railway n8n Webhook -> PostgreSQL
+    async function saveBotSettings() {
+      const baseUrl = document.getElementById('cfg-n8n-url').value.replace(/\/$/, "");
+      const targetEndpoint = `${baseUrl}/webhook/update-bot-settings`;
+
+      const payload = {
+        operating_start_hour: parseInt(document.getElementById('operatingStart').value),
+        operating_end_hour: parseInt(document.getElementById('operatingEnd').value),
+        min_delay_minutes: parseInt(document.getElementById('minDelay').value),
+        max_delay_minutes: parseInt(document.getElementById('maxDelay').value)
+      };
+
+      try {
+        const response = await fetch(targetEndpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+          alert("✅ Bot settings successfully saved to PostgreSQL!");
+        } else {
+          alert("⚠️ Failed to save settings to n8n backend. Verify Railway endpoint URL in Config modal.");
+        }
+      } catch (err) {
+        console.error("Error saving bot settings:", err);
+        alert("❌ Error connecting to Railway n8n backend.");
+      }
+    }
+
     // Initialize UI
     renderProspects();
     selectProspect(1);
   </script>
 </body>
-<!-- Tab Header & Live GMT+8 Clock -->
-<div style="background: #1e293b; color: #fff; padding: 20px; border-radius: 12px; font-family: sans-serif;">
-  <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; padding-bottom: 12px; margin-bottom: 20px;">
-    <h2>🤖 Bot Automation Settings</h2>
-    <div style="text-align: right;">
-      <span style="font-size: 12px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px;">Current System Time</span>
-      <div id="sgtClock" style="font-size: 20px; font-weight: bold; color: #38bdf8; font-family: monospace;">--:--:-- SGT (GMT+8)</div>
-    </div>
-  </div>
-
-  <form id="botSettingsForm">
-    <!-- Feature 1: Operating Hours -->
-    <div style="background: #0f172a; padding: 16px; border-radius: 8px; margin-bottom: 16px; border: 1px solid #334155;">
-      <h3 style="margin-top: 0; color: #f8fafc; font-size: 16px;">⏰ Feature 1: Operating Hours (GMT+8 Singapore Time)</h3>
-      <p style="color: #94a3b8; font-size: 13px;">The bot will only generate and send automated replies within this timeframe.</p>
-      
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-        <div>
-          <label style="display: block; color: #cbd5e1; font-size: 13px; margin-bottom: 6px;">Start Replying At (Hour):</label>
-          <select id="operatingStart" style="width: 100%; padding: 8px; border-radius: 6px; background: #1e293b; color: #fff; border: 1px solid #475569;">
-            <!-- Generated via JS (00:00 to 23:00) -->
-          </select>
-        </div>
-        <div>
-          <label style="display: block; color: #cbd5e1; font-size: 13px; margin-bottom: 6px;">Stop Replying At (Hour):</label>
-          <select id="operatingEnd" style="width: 100%; padding: 8px; border-radius: 6px; background: #1e293b; color: #fff; border: 1px solid #475569;">
-            <!-- Generated via JS (00:00 to 23:00) -->
-          </select>
-        </div>
-      </div>
-    </div>
-
-    <!-- Feature 2: Random Reply Delay Range -->
-    <div style="background: #0f172a; padding: 16px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #334155;">
-      <h3 style="margin-top: 0; color: #f8fafc; font-size: 16px;">⏳ Feature 2: Human-like Random Delay Interval</h3>
-      <p style="color: #94a3b8; font-size: 13px;">Every reply will wait for a random duration inside this range before sending to simulate manual typing.</p>
-      
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-        <div>
-          <label style="display: block; color: #cbd5e1; font-size: 13px; margin-bottom: 6px;">Minimum Delay (Minutes):</label>
-          <input type="number" id="minDelay" min="0" max="60" value="2" style="width: 100%; padding: 8px; border-radius: 6px; background: #1e293b; color: #fff; border: 1px solid #475569;">
-        </div>
-        <div>
-          <label style="display: block; color: #cbd5e1; font-size: 13px; margin-bottom: 6px;">Maximum Delay (Minutes):</label>
-          <input type="number" id="maxDelay" min="1" max="120" value="15" style="width: 100%; padding: 8px; border-radius: 6px; background: #1e293b; color: #fff; border: 1px solid #475569;">
-        </div>
-      </div>
-    </div>
-
-    <button type="button" onclick="saveBotSettings()" style="background: #2563eb; color: #fff; padding: 10px 24px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;">
-      Save Bot Configuration
-    </button>
-  </form>
-</div>
-
-<script>
-  // 1. Live GMT+8 Singapore Clock
-  function updateSGTClock() {
-    const options = {
-      timeZone: 'Asia/Singapore',
-      hour12: false,
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit'
-    };
-    const nowStr = new Intl.DateTimeFormat('en-GB', options).format(new Date());
-    document.getElementById('sgtClock').innerText = `${nowStr} SGT (GMT+8)`;
-  }
-  setInterval(updateSGTClock, 1000);
-  updateSGTClock();
-
-  // Populate Hour Select Dropdowns
-  const startSelect = document.getElementById('operatingStart');
-  const endSelect = document.getElementById('operatingEnd');
-  for (let i = 0; i < 24; i++) {
-    const hourLabel = (i < 10 ? '0' + i : i) + ':00';
-    startSelect.options.add(new Option(hourLabel, i));
-    endSelect.options.add(new Option(hourLabel, i));
-  }
-  startSelect.value = 9;  // Default 09:00
-  endSelect.value = 21;  // Default 21:00
-
-  // 2. Save Settings to Backend API / Database
-  async function saveBotSettings() {
-    const payload = {
-      operating_start_hour: parseInt(document.getElementById('operatingStart').value),
-      operating_end_hour: parseInt(document.getElementById('operatingEnd').value),
-      min_delay_minutes: parseInt(document.getElementById('minDelay').value),
-      max_delay_minutes: parseInt(document.getElementById('maxDelay').value)
-    };
-
-    // Replace with your API endpoint or direct Postgres update query
-    console.log("Saving settings to PostgreSQL:", payload);
-    alert("Bot settings updated successfully!");
-  }
-</script>
 </html>
