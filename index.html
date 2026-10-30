@@ -11,10 +11,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
-  <!-- Passcode Protection Script -->
+  <!-- Very simple passcode gate (demo only) -->
   <script>
     (function() {
-      const MASTER_PIN = "245689168"; // Team passcode
+      const MASTER_PIN = "245689168"; // Demo passcode, visible in code.
       if (!sessionStorage.getItem("moomoo_auth")) {
         const pin = prompt("🔒 Restricted Access: Enter Team Passcode to open Moomoo Dashboard:");
         if (pin === MASTER_PIN) {
@@ -42,6 +42,7 @@
       --text-main: #f3f4f6;
       --text-muted: #9ca3af;
       --text-dim: #6b7280;
+      --text-gold: #fde047;
       --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
       --radius-sm: 8px;
       --radius-md: 12px;
@@ -507,13 +508,13 @@
       <div class="status-chip">
         <span class="dot active"></span> Postgres DB
         <span class="info-badge">i
-          <span class="tooltip-popover">Railway PostgreSQL database storing prospects, stages, and WhatsApp chat history.</span>
+          <span class="tooltip-popover">Future: PostgreSQL database storing prospects, stages, and WhatsApp chat history via n8n.</span>
         </span>
       </div>
       <div class="status-chip">
         <span class="dot active"></span> n8n Engine
         <span class="info-badge">i
-          <span class="tooltip-popover">n8n workflow automation backend running on Railway.</span>
+          <span class="tooltip-popover">n8n workflow automation backend running on n8n Cloud.</span>
         </span>
       </div>
       <button class="btn btn-secondary" onclick="toggleModal('config-modal')" style="padding:4px 10px; font-size:12px;">
@@ -568,7 +569,7 @@
             <textarea id="outreach-script" class="form-control" rows="4">Hi {{name}}! Welcome to the Moomoo Stock Mastery Programme. Are you ready to unlock our official stock signal channels?</textarea>
           </div>
           <button class="btn btn-primary" onclick="triggerBatchOutreach()">
-            <i class="fa-solid fa-rocket"></i> Launch Outbound Campaign
+            <i class="fa-solid fa-rocket"></i> Launch Outbound Campaign (Demo)
           </button>
         </div>
 
@@ -707,7 +708,7 @@ Guidelines:
 2. Answer stock market and program questions based on the Knowledge Base.
 3. Once the lead expresses clear interest in joining the community, invite them and update stage to 'Stage 3: Ready for Group'.</textarea>
           </div>
-          <button class="btn btn-primary" onclick="alert('Master System Prompt Saved!')">
+          <button class="btn btn-primary" onclick="alert('Master System Prompt Saved! (demo only)')">
             <i class="fa-solid fa-floppy-disk"></i> Save System Prompt
           </button>
         </div>
@@ -732,7 +733,7 @@ Guidelines:
             <label class="form-label">Official AI Answer</label>
             <textarea id="faq-answer" class="form-control" placeholder="Yes, the introductory masterclass is 100% complimentary."></textarea>
           </div>
-          <button class="btn btn-success" onclick="addFAQRule()">
+          <button class="btn btn-success" onclick="alert('FAQ Rule Saved! (demo only)')">
             <i class="fa-solid fa-plus"></i> Add FAQ Rule
           </button>
         </div>
@@ -745,7 +746,7 @@ Guidelines:
         <div class="card-header">
           <div>
             <span class="card-title"><i class="fa-solid fa-robot"></i> Bot Automation Settings</span>
-            <p style="color: var(--text-muted); font-size: 12px; margin-top: 4px;">Configure dynamic operating hours and anti-spam randomized reply delays stored in PostgreSQL.</p>
+            <p style="color: var(--text-muted); font-size: 12px; margin-top: 4px;">Configure dynamic operating hours and anti-spam randomized reply delays sent to n8n Cloud (and then Postgres).</p>
           </div>
           <div style="text-align: right; background: rgba(15, 23, 42, 0.6); padding: 6px 14px; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
             <span style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; display: block;">System Time</span>
@@ -764,15 +765,11 @@ Guidelines:
               
               <div class="form-group">
                 <label class="form-label">Start Replying At (Hour):</label>
-                <select id="operatingStart" class="form-control">
-                  <!-- Populated via JS -->
-                </select>
+                <select id="operatingStart" class="form-control"></select>
               </div>
               <div class="form-group" style="margin-bottom: 0;">
                 <label class="form-label">Stop Replying At (Hour):</label>
-                <select id="operatingEnd" class="form-control">
-                  <!-- Populated via JS -->
-                </select>
+                <select id="operatingEnd" class="form-control"></select>
               </div>
             </div>
 
@@ -797,6 +794,10 @@ Guidelines:
           <button type="button" class="btn btn-primary" onclick="saveBotSettings()">
             <i class="fa-solid fa-floppy-disk"></i> Save Bot Configuration
           </button>
+
+          <button type="button" class="btn btn-secondary" onclick="testN8n()" style="margin-top:8px;">
+            <i class="fa-solid fa-plug"></i> Test n8n Connection
+          </button>
         </form>
       </div>
     </div>
@@ -814,7 +815,7 @@ Guidelines:
             <i class="fa-solid fa-chevron-down"></i>
           </div>
           <div class="accordion-body">
-            Upload CSV files containing <code>phone_number</code> and <code>name</code>. Phone numbers are automatically cleaned to E.164 international format (e.g. 6585791271).
+            Upload CSV files containing <code>phone_number</code> and <code>name</code>. Phone numbers are automatically cleaned to E.164-like international format (digits only, e.g. 6585791271).
           </div>
         </div>
 
@@ -859,14 +860,14 @@ Guidelines:
       <button class="btn btn-secondary" onclick="toggleModal('config-modal')" style="padding:2px 8px;">✕</button>
     </div>
     <div class="form-group">
-      <label class="form-label">n8n Railway Webhook Base URL</label>
-      <input type="text" id="cfg-n8n-url" class="form-control" value="https://n8n-production-1c55b.up.railway.app" />
+      <label class="form-label">n8n Webhook Base URL</label>
+      <input type="text" id="cfg-n8n-url" class="form-control" placeholder="https://YOUR-WORKSPACE-NAME.n8n.cloud" />
     </div>
-    <button class="btn btn-primary" onclick="toggleModal('config-modal')" style="width:100%;">Save Configuration</button>
+    <button class="btn btn-primary" onclick="toggleModal('config-modal')" style="width:100%;">Close</button>
   </div>
 
   <script>
-    // State Management - Neutral Sample Lead Names
+    // ============ Simple In-Memory Demo CRM ============ //
     let prospects = [
       { id: 1, name: "Jason Wong", phone: "6591234567", stage: "Stage 2: AI Engaged", human: false, joined: false, history: [
         { sender: "ai", text: "Hi Jason! Welcome to Moomoo Stock Mastery. Ready to get started?", time: "10:14" },
@@ -886,33 +887,41 @@ Guidelines:
 
     let activeProspectId = 1;
     let currentStageFilter = 'ALL';
+    let pendingLeads = [];
+
+    function cleanPhone(raw) {
+      let digits = String(raw).replace(/\D/g, "");
+      if (digits.length === 8) digits = "65" + digits;
+      return digits;
+    }
 
     // Tab Switching Function
     function switchTab(tabId, btnElement) {
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
       document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-      
-      if (btnElement) {
-        btnElement.classList.add('active');
-      }
+      if (btnElement) btnElement.classList.add('active');
       document.getElementById(tabId).classList.add('active');
     }
 
     function toggleModal(id) {
       const el = document.getElementById(id);
-      el.style.display = el.style.display === 'none' ? 'block' : 'none';
+      el.style.display = el.style.display === 'none' || !el.style.display ? 'block' : 'none';
     }
 
     function renderProspects() {
       const tbody = document.getElementById('prospects-table-body');
       tbody.innerHTML = '';
-      const query = document.getElementById('crm-search').value.toLowerCase();
+      const query = (document.getElementById('crm-search').value || '').toLowerCase();
 
       let filtered = prospects.filter(p => {
         const matchesQuery = p.name.toLowerCase().includes(query) || p.phone.includes(query);
         const matchesStage = currentStageFilter === 'ALL' || p.stage.includes(currentStageFilter);
         return matchesQuery && matchesStage;
       });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-dim);">No leads found</td></tr>`;
+      }
 
       filtered.forEach(p => {
         let badgeClass = 'stage-1';
@@ -943,6 +952,7 @@ Guidelines:
     function selectProspect(id) {
       activeProspectId = id;
       const p = prospects.find(x => x.id === id);
+      if (!p) return;
       document.getElementById('active-chat-name').innerText = p.name;
       document.getElementById('active-chat-phone').innerText = `+${p.phone} | ${p.stage}`;
       
@@ -970,17 +980,16 @@ Guidelines:
 
     function toggleTakeover(id) {
       const p = prospects.find(x => x.id === id);
+      if (!p) return;
       p.human = !p.human;
-      if (!p.human) {
-        p.history.push({ sender: 'system', text: '🤖 AI resumed control and analyzed chat history.', time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) });
-      } else {
-        p.history.push({ sender: 'system', text: '🤝 Human sales rep took over control.', time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) });
-      }
+      const msg = p.human ? '🤝 Human sales rep took over control.' : '🤖 AI resumed control and analyzed chat history.';
+      p.history.push({ sender: 'system', text: msg, time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) });
       selectProspect(id);
     }
 
     function acknowledgeJoined(id) {
       const p = prospects.find(x => x.id === id);
+      if (!p) return;
       const timestamp = new Date().toLocaleString([], { month:'short', day:'numeric', year:'numeric', hour:'2-digit', minute:'2-digit' });
       p.joined = true;
       p.joinedAt = timestamp;
@@ -993,6 +1002,11 @@ Guidelines:
     function renderChatMessages(p) {
       const box = document.getElementById('chat-messages-box');
       box.innerHTML = '';
+
+      if (!p.history || p.history.length === 0) {
+        box.innerHTML = `<div style="text-align:center; color:var(--text-dim); margin-top:40%;">No messages yet</div>`;
+        return;
+      }
 
       p.history.forEach(m => {
         if (m.sender === 'system') {
@@ -1016,6 +1030,8 @@ Guidelines:
       if (!text) return;
 
       const p = prospects.find(x => x.id === activeProspectId);
+      if (!p) return;
+
       const timeStr = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
       p.history.push({ sender: 'user', text: text, time: timeStr });
 
@@ -1023,6 +1039,7 @@ Guidelines:
         p.stage = 'Stage 3: Ready for Group';
         p.history.push({ sender: 'ai', text: "Awesome! I've notified our team coordinator to send over your private WhatsApp group link.", time: timeStr });
       } else if (!p.human && !p.joined) {
+        if (p.stage.includes('Stage 1')) p.stage = 'Stage 2: AI Engaged';
         p.history.push({ sender: 'ai', text: "Thanks for your response! Let me check that for you.", time: timeStr });
       }
 
@@ -1052,6 +1069,107 @@ Guidelines:
 
     function toggleAccordion(el) {
       el.classList.toggle('active');
+    }
+
+    // Simple CSV parser
+    function parseCSVLine(line) {
+      const result = [];
+      let cur = "", inQuotes = false;
+      for (let i = 0; i < line.length; i++) {
+        const ch = line[i];
+        if (ch === '"') {
+          if (inQuotes && line[i + 1] === '"') { cur += '"'; i++; }
+          else inQuotes = !inQuotes;
+        } else if (ch === "," && !inQuotes) {
+          result.push(cur); cur = "";
+        } else {
+          cur += ch;
+        }
+      }
+      result.push(cur);
+      return result.map(s => s.trim());
+    }
+
+    function parseCSVLeads(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        try {
+          const lines = e.target.result.split(/\r?\n/).filter(l => l.trim() !== "");
+          if (lines.length < 2) {
+            alert("CSV appears empty");
+            return;
+          }
+          const headers = parseCSVLine(lines[0]).map(h => h.toLowerCase());
+          const phoneIdx = headers.indexOf("phone_number");
+          const nameIdx = headers.indexOf("name");
+          if (phoneIdx === -1 || nameIdx === -1) {
+            alert("CSV must contain 'phone_number' and 'name' columns");
+            return;
+          }
+          const tbody = document.getElementById("csv-preview-body");
+          tbody.innerHTML = "";
+          pendingLeads = [];
+          let valid = 0, invalid = 0;
+
+          for (let i = 1; i < lines.length; i++) {
+            const cols = parseCSVLine(lines[i]);
+            const rawPhone = cols[phoneIdx] || "";
+            const name = cols[nameIdx] || "";
+            const phone = cleanPhone(rawPhone);
+            const isValid = phone.length >= 10 && name.length > 0;
+
+            if (isValid) {
+              valid++;
+              pendingLeads.push({ phone, name });
+            } else invalid++;
+
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+              <td>${phone}</td>
+              <td>${name}</td>
+              <td>${isValid ? "<span style='color:var(--accent-green);'>✓ Valid</span>" : "<span style='color:var(--accent-danger);'>✗ Invalid</span>"}</td>`;
+            tbody.appendChild(tr);
+          }
+        } catch (err) {
+          console.error(err);
+          alert("Error parsing CSV file");
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    // Demo: add pending leads to CRM (no n8n yet for outreach)
+    function triggerBatchOutreach() {
+      const campaign = document.getElementById("campaign-name").value.trim();
+      const template = document.getElementById("outreach-script").value.trim();
+      if (!campaign) {
+        alert("Enter a campaign identifier");
+        return;
+      }
+      if (!pendingLeads.length) {
+        alert("Upload a CSV with leads first");
+        return;
+      }
+      pendingLeads.forEach(l => {
+        prospects.push({
+          id: prospects.length ? Math.max(...prospects.map(p => p.id)) + 1 : 1,
+          name: l.name,
+          phone: l.phone,
+          stage: "Stage 1: Outreached",
+          human: false,
+          joined: false,
+          history: [
+            { sender: "ai", text: template.replace(/\{\{name\}\}/g, l.name), time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) }
+          ]
+        });
+      });
+      pendingLeads = [];
+      document.getElementById("csv-preview-body").innerHTML =
+        `<tr><td colspan="3" style="text-align:center; color:var(--text-dim);">No CSV loaded yet</td></tr>`;
+      alert("Demo: leads added to CRM. (n8n WhatsApp sending comes later)");
+      renderProspects();
     }
 
     // ==================== BOT AUTOMATION SETTINGS ENGINE ==================== //
@@ -1087,9 +1205,13 @@ Guidelines:
       endSelect.value = 21;  // Default 09:00 PM (21:00)
     }
 
-    // 3. Save Settings to Railway n8n Webhook -> PostgreSQL
+    // 3. Save Settings to n8n Cloud Webhook -> (later Postgres via n8n)
     async function saveBotSettings() {
-      const baseUrl = document.getElementById('cfg-n8n-url').value.replace(/\/$/, "");
+      const baseUrl = (document.getElementById('cfg-n8n-url').value || "").replace(/\/$/, "");
+      if (!baseUrl) {
+        alert("Please open Config and set your n8n Cloud URL first (e.g. https://your-workspace.n8n.cloud).");
+        return;
+      }
       const targetEndpoint = `${baseUrl}/webhook/update-bot-settings`;
 
       const payload = {
@@ -1107,13 +1229,34 @@ Guidelines:
         });
 
         if (response.ok) {
-          alert("✅ Bot settings successfully saved to PostgreSQL!");
+          alert("✅ Bot settings successfully sent to n8n Cloud!");
         } else {
-          alert("⚠️ Failed to save settings to n8n backend. Verify Railway endpoint URL in Config modal.");
+          alert("⚠️ Failed to save settings to n8n backend. Check URL and workflow in n8n.");
         }
       } catch (err) {
         console.error("Error saving bot settings:", err);
-        alert("❌ Error connecting to Railway n8n backend.");
+        alert("❌ Error connecting to n8n backend.");
+      }
+    }
+
+    // 4. Simple Test n8n Connection using /webhook/test-dashboard
+    async function testN8n() {
+      const baseUrl = (document.getElementById('cfg-n8n-url').value || "").replace(/\/$/, "");
+      if (!baseUrl) {
+        alert("Please open Config and set your n8n Cloud URL first.");
+        return;
+      }
+      try {
+        const res = await fetch(baseUrl + "/webhook/test-dashboard", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ test: true })
+        });
+        const data = await res.json();
+        alert("n8n responded: " + JSON.stringify(data));
+      } catch (e) {
+        console.error(e);
+        alert("Failed to reach n8n. Check URL or workflow activation.");
       }
     }
 
