@@ -335,21 +335,35 @@ const sendMsg = async () => {
         document.getElementById('chat-messages').scrollTop = document.getElementById('chat-messages').scrollHeight;
         try{
             const res = await fetch(ENDPOINTS.AI, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ lead_id: l.id, id: l.id, name: l.name, stage: l.stage, joined: l.joined, message: txt, text: txt }) });
-            const data = await res.json();
-            const aiReply = data.reply || data.message || data.output || "AI error - check OpenAI credential in n8n ai-chat workflow";
+            let aiReply = "";
+            const ct = res.headers.get('content-type') || '';
+            if(ct.includes('application/json')){
+                const data = await res.json();
+                if(typeof data === 'string') aiReply = data;
+                else if(data.reply) aiReply = data.reply;
+                else if(data.message && typeof data.message === 'string') aiReply = data.message;
+                else if(data.message && data.message.content) aiReply = data.message.content;
+                else if(data.content) aiReply = data.content;
+                else if(data.output) aiReply = data.output;
+                else if(data.choices && data.choices[0] && data.choices[0].message) aiReply = data.choices[0].message.content;
+                else aiReply = JSON.stringify(data);
+            } else {
+                aiReply = await res.text();
+                // Remove leading = if present from old expression bug
+                if(aiReply.startsWith('=')) aiReply = aiReply.substring(1);
+                aiReply = aiReply.replace(/^\{\{/, '').replace(/\}\}$/, '').trim();
+            }
+            if(!aiReply || aiReply === "") aiReply = "AI error - check OpenAI credential in n8n ai-chat workflow";
             typing.remove();
             l.history.push({role:'ai', text: aiReply});
             renderChat();
-            if(l.stage==='Stage 1: Cold'){ l.stage='Stage 2: Engaged'; await updateLeadInNeon(l); renderCRM(); }
-            // Optional auto-send via WhatsApp API
-            // await fetch(ENDPOINTS.WHATSAPP_SEND, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ phone: l.phone, message: aiReply }) });
+            if(l.stage==='Stage 1: Cold' || l.stage==='New Lead'){ l.stage='Stage 2: Engaged'; await updateLeadInNeon(l); renderCRM(); }
         }catch(e){
             typing.remove();
             l.history.push({role:'ai', text:`Error calling AI: ${ENDPOINTS.AI} - Check workflow Active + OpenAI credential. ${e.message}`});
             renderChat();
         }
     } else if(role==='staff'){
-        // Staff manual message -> optionally send via WhatsApp API
         try{ await fetch(ENDPOINTS.WHATSAPP_SEND, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ phone: l.phone, message: txt }) }); toast('Sent via WhatsApp Business API'); }catch(e){ toast('Staff message saved locally - WhatsApp send needs whatsapp-send workflow'); }
     }
 };
