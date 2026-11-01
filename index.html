@@ -92,7 +92,7 @@
                 </div>
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 items-start">
                     <div class="glass p-4 sm:p-5 lg:col-span-5 flex flex-col min-h-[400px] h-[50vh] lg:h-[70vh]">
-                        <div class="flex flex-col sm:flex-row gap-2 mb-4"><input type="text" id="crm-search" placeholder="Search Neon leads..." class="input-glass flex-1" oninput="renderCRM()"><div class="flex gap-2"><select id="crm-filter" class="input-glass w-full sm:w-auto text-sm" onchange="renderCRM()"><option value="all">All Stages</option><option value="Stage 1: Cold">Stage 1: Cold</option><option value="Stage 2: Engaged">Stage 2: Engaged</option><option value="Stage 3: Ready">Stage 3: Ready</option><option value="Stage 4: Joined VIP">Stage 4: Joined VIP</option></select><button onclick="exportCSV()" class="btn-glass btn-gray px-3"><i class="fa-solid fa-download"></i></button></div></div>
+                        <div class="flex flex-col sm:flex-row gap-2 mb-4"><input type="text" id="crm-search" placeholder="Search Neon leads..." class="input-glass flex-1" oninput="renderCRM()"><div class="flex gap-2"><select id="crm-filter" class="input-glass w-full sm:w-auto text-sm" onchange="renderCRM()"><option value="all">All Stages</option><option value="Stage 1: Cold">Stage 1: Cold</option><option value="Stage 2: Engaged">Stage 2: Engaged</option><option value="Stage 3: Ready">Stage 3: Ready</option><option value="Stage 4: Joined VIP">Stage 4: Joined VIP</option></select><button onclick="exportCSV()" class="btn-glass btn-gray px-3 hover:text-green-400" title="Export Leads to CSV"><i class="fa-solid fa-download"></i></button></div></div>
                         <div class="overflow-auto flex-1 bg-black/20 rounded-lg border border-white/5"><table class="w-full"><thead class="sticky top-0 z-10 bg-slate-900/90 backdrop-blur"><tr><th>Lead Info</th><th>Pipeline Stage</th><th>Action</th></tr></thead><tbody id="crm-body"></tbody></table></div>
                     </div>
                     <div class="glass p-0 lg:col-span-7 flex flex-col min-h-[450px] h-[60vh] lg:h-[70vh]">
@@ -105,12 +105,18 @@
 
             <div id="tab-ai" class="tab-pane hidden space-y-6">
                 <div class="glass p-5 sm:p-8"><div class="flex flex-col sm:flex-row justify-between items-start gap-4 mb-6"><div><div class="flex items-center gap-3 mb-1"><div class="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center shrink-0"><i class="fa-solid fa-microchip text-blue-400"></i></div><h2 class="text-lg font-bold">AI Provider & Engine - OpenAI</h2></div><p class="text-sm text-slate-400 sm:ml-11">Manage LLM routing globally. Locked by PIN for security. Connected via n8n OpenAI credential.</p></div><div class="flex items-center gap-3 w-full sm:w-auto justify-end"><span id="lock-status" class="text-xs font-bold text-amber-400 bg-amber-400/10 px-3 py-1.5 rounded-full border border-amber-400/30 flex items-center gap-1"><i class="fa-solid fa-lock text-[10px]"></i> Locked</span><button id="btn-unlock" onclick="openModal('unlock-modal')" class="btn-glass btn-gold text-xs"><i class="fa-solid fa-key"></i> Unlock</button><button id="btn-save-ai" onclick="saveAI()" class="btn-glass btn-green text-xs hidden"><i class="fa-solid fa-check"></i> Save & Sync to n8n</button></div></div><div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:ml-11"><div><label class="block text-xs font-semibold text-slate-400 mb-1.5 uppercase">Provider Base</label><select id="ai-provider" class="input-glass" disabled><option value="openai">OpenAI (Primary) - gpt-4o-mini</option><option value="anthropic">Anthropic (future)</option></select></div><div><label class="block text-xs font-semibold text-slate-400 mb-1.5 uppercase">Active Model Route</label><select id="ai-model" class="input-glass" disabled><option value="gpt-4o-mini">GPT-4o mini (Fast, $0.15/1M - Recommended for sales)</option><option value="gpt-4o">GPT-4o (Best quality)</option></select></div></div></div>
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div class="glass p-5 sm:p-6 flex flex-col"><div class="flex items-center gap-2 mb-2"><i class="fa-solid fa-brain text-blue-400"></i><h3 class="font-bold text-white text-base">Brain 1: Sales (Stages 1-3) - OpenAI</h3></div><p class="text-xs text-slate-400 mb-4">Active until lead joins. Uses n8n OpenAI node with sales prompt.</p><textarea id="prompt-b1" class="input-glass flex-1 min-h-[350px] mb-4 resize-y text-sm leading-relaxed text-slate-300">You are Sarah, expert high-ticket sales consultant. GOAL: Guide prospects through stock masterclass funnel, handle objections, qualify for VIP Group. TONE: Professional, encouraging, urgent. MATRIX: If price: "Initial masterclass is 100% complimentary." If no time: "Recordings sent to VIP group." CLOSING: Provide group invite link. Close with exactly: 'Will be adding you to the group shortly.'</textarea><button onclick="toast('Brain 1 Prompt - Will sync to n8n ai-chat workflow OpenAI node')" class="btn-glass btn-gray w-full mt-auto"><i class="fa-solid fa-floppy-disk"></i> Deploy Brain 1 to n8n</button></div>
-                    <div class="glass p-5 sm:p-6 flex flex-col"><div class="flex items-center gap-2 mb-2"><i class="fa-solid fa-graduation-cap text-green-400"></i><h3 class="font-bold text-white text-base">Brain 2: Support (Stage 4) - OpenAI</h3></div><p class="text-xs text-slate-400 mb-4">Takes over when Ack Join clicked. Focused purely on retention.</p><textarea id="prompt-b2" class="input-glass flex-1 min-h-[350px] mb-4 resize-y text-sm leading-relaxed text-slate-300">You are Alex, VIP Community Success Manager. GOAL: Prospect joined VIP group. Retain, prepare for first session, answer logistics. TONE: Supportive, warm, clear. GUIDELINES: Do NOT sell. If charts: "Proprietary chart setups posted 1 hour before bell in VIP group." If tech: "Make sure Zoom installed for tonight."</textarea><button onclick="toast('Brain 2 Prompt - Will sync to n8n ai-chat workflow')" class="btn-glass btn-gray w-full mt-auto"><i class="fa-solid fa-floppy-disk"></i> Deploy Brain 2 to n8n</button></div>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="glass p-5 sm:p-6 flex flex-col"><div class="flex items-center gap-2 mb-2"><i class="fa-solid fa-brain text-blue-400"></i><h3 class="font-bold text-white text-base">Brain 1: Sales</h3></div><p class="text-xs text-slate-400 mb-4">Active until lead joins. Uses n8n OpenAI node with sales prompt.</p><textarea id="prompt-b1" class="input-glass flex-1 min-h-[350px] mb-4 resize-y text-sm leading-relaxed text-slate-300">You are Sarah, expert high-ticket sales consultant. GOAL: Guide prospects through stock masterclass funnel, handle objections, qualify for VIP Group. TONE: Professional, encouraging, urgent. MATRIX: If price: "Initial masterclass is 100% complimentary." If no time: "Recordings sent to VIP group." CLOSING: Provide group invite link. Close with exactly: 'Will be adding you to the group shortly.'</textarea><button onclick="toast('Brain 1 Prompt - Will sync to n8n ai-chat workflow OpenAI node')" class="btn-glass btn-gray w-full mt-auto"><i class="fa-solid fa-floppy-disk"></i> Deploy Brain 1 to n8n</button></div>
+                    
+                    <div class="glass p-5 sm:p-6 flex flex-col"><div class="flex items-center gap-2 mb-2"><i class="fa-solid fa-graduation-cap text-green-400"></i><h3 class="font-bold text-white text-base">Brain 2: Support</h3></div><p class="text-xs text-slate-400 mb-4">Takes over when Ack Join clicked. Focused purely on retention.</p><textarea id="prompt-b2" class="input-glass flex-1 min-h-[350px] mb-4 resize-y text-sm leading-relaxed text-slate-300">You are Alex, VIP Community Success Manager. GOAL: Prospect joined VIP group. Retain, prepare for first session, answer logistics. TONE: Supportive, warm, clear. GUIDELINES: Do NOT sell. If charts: "Proprietary chart setups posted 1 hour before bell in VIP group." If tech: "Make sure Zoom installed for tonight."</textarea><button onclick="toast('Brain 2 Prompt - Will sync to n8n ai-chat workflow')" class="btn-glass btn-gray w-full mt-auto"><i class="fa-solid fa-floppy-disk"></i> Deploy Brain 2 to n8n</button></div>
+
+                    <div class="glass p-5 sm:p-6 flex flex-col"><div class="flex items-center gap-2 mb-2"><i class="fa-solid fa-magnifying-glass-chart text-amber-400"></i><h3 class="font-bold text-white text-base">Brain 3: WA Analyzer</h3></div><p class="text-xs text-slate-400 mb-4">Analyzes chat history for sentiment and objections.</p><textarea id="prompt-b3" class="input-glass flex-1 min-h-[350px] mb-4 resize-y text-sm leading-relaxed text-slate-300">You are an expert sales analyst. Review the provided WhatsApp chat history.
+GOAL: Extract the primary objections, gauge the prospect's sentiment (Cold, Warm, Hot), and suggest the next best action for the human closer.
+FORMAT: Output a brief JSON with keys: "sentiment", "main_objection", and "recommended_action". Do not output markdown.</textarea><button onclick="toast('Brain 3 Prompt - Syncs to an n8n manual trigger Analyzer workflow')" class="btn-glass btn-gray w-full mt-auto"><i class="fa-solid fa-floppy-disk"></i> Deploy Brain 3 to n8n</button></div>
                 </div>
             </div>
 
+            <!-- ... Other tabs (bot, knowledge, bulk, handbook) remain exactly the same as your original ... -->
             <div id="tab-bot" class="tab-pane hidden space-y-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="glass p-6"><div class="flex items-center gap-3 mb-5"><div class="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center shrink-0"><i class="fa-solid fa-clock text-amber-400 text-lg"></i></div><div><h2 class="font-bold text-white text-lg">Operating Hours - n8n</h2><p class="text-xs text-slate-400">Timezone: SGT (GMT+8) - Controlled in n8n workflow</p></div></div><div class="flex gap-4 mb-6"><div class="flex-1"><label class="block text-xs font-semibold text-slate-400 mb-1.5 uppercase">Start</label><input type="time" class="input-glass" value="09:00"></div><div class="flex-1"><label class="block text-xs font-semibold text-slate-400 mb-1.5 uppercase">End</label><input type="time" class="input-glass" value="21:00"></div></div><button onclick="toast('Operating Hours saved - update in n8n workflow Switch node')" class="btn-glass btn-gray w-full"><i class="fa-solid fa-cloud-arrow-up"></i> Sync to n8n</button></div>
@@ -137,6 +143,7 @@
         </main>
     </div>
 
+    <!-- Modals -->
     <div id="unlock-modal" class="modal-overlay"><div class="glass w-full max-w-sm p-6 text-center shadow-2xl"><div class="w-12 h-12 rounded-full bg-amber-500/20 flex items-center justify-center mx-auto mb-4"><i class="fa-solid fa-unlock-keyhole text-amber-400 text-xl"></i></div><h3 class="font-bold mb-1 text-white text-lg">Unlock Model Settings</h3><p class="text-xs text-slate-400 mb-5">Admin PIN: 00000</p><form onsubmit="unlockSettings(event)"><input type="password" id="pin-input" class="input-glass text-center text-lg tracking-widest py-3 mb-5" placeholder="00000"><div class="flex gap-3"><button type="button" onclick="closeModal('unlock-modal')" class="btn-glass btn-gray flex-1">Cancel</button><button type="submit" class="btn-glass btn-gold flex-1 text-black font-bold">Verify</button></div></form></div></div>
     <div id="quick-lead-modal" class="modal-overlay"><div class="glass w-full max-w-sm p-6 shadow-2xl"><h3 class="font-bold mb-1 text-white text-lg">Add Quick Lead - Neon + WA</h3><p class="text-xs text-slate-400 mb-5">Will INSERT via n8n → WhatsApp API</p><div class="space-y-4 mb-6"><div><label class="block text-xs font-semibold text-slate-400 mb-1">Name</label><input type="text" id="ql-name" class="input-glass py-2" placeholder="Bruce Wayne"></div><div><label class="block text-xs font-semibold text-slate-400 mb-1">Phone (with country code)</label><input type="text" id="ql-phone" class="input-glass py-2" placeholder="60123456789"></div></div><div class="flex gap-3"><button onclick="closeModal('quick-lead-modal')" class="btn-glass btn-gray flex-1">Cancel</button><button onclick="addLead()" class="btn-glass btn-blue flex-1">Save to Neon + WA</button></div></div></div>
     <div id="config-modal" class="modal-overlay"><div class="glass w-full max-w-md p-6 shadow-2xl"><div class="flex items-center gap-3 mb-5"><i class="fa-solid fa-server text-[#ff6d5a] text-xl"></i><h3 class="font-bold text-white text-lg">Backend Integration - Production</h3></div><label class="block text-xs font-semibold text-slate-400 mb-1">n8n Cloud Instance</label><input type="text" class="input-glass mb-3 font-mono text-sm py-2" value="https://lhy05.app.n8n.cloud"><label class="block text-xs font-semibold text-slate-400 mb-1">Neon Direct Host (no pooler, no channel_binding)</label><input type="text" class="input-glass mb-3 font-mono text-sm py-2" value="ep-soft-glade-b3ufzrzp.c-4.ap-southeast-1.aws.neon.tech"><label class="block text-xs font-semibold text-slate-400 mb-1">OpenAI Model</label><input type="text" class="input-glass mb-6 font-mono text-sm py-2" value="gpt-4o-mini"><div class="flex gap-3"><button onclick="closeModal('config-modal')" class="btn-glass btn-gray flex-1">Cancel</button><button onclick="toast('Production config saved'); closeModal('config-modal')" class="btn-glass btn-n8n flex-1">Save</button></div></div></div>
@@ -156,9 +163,9 @@ const ENDPOINTS = {
     CHAT_HISTORY: `${N8N_BASE}/get-chat-history`
 };
 
-// ===== STATE - NOW PERSISTENT (was hardcoded) =====
+// ===== STATE =====
 let state = {
-    leads: [], // Loaded from Neon via n8n, not hardcoded
+    leads: [], 
     faqs: [
         { id: 101, q: "What time is the live masterclass?", a: "The live session begins exactly at 8:00 PM SGT." },
         { id: 102, q: "Is there a recording available?", a: "Yes! All VIP members receive lifetime access to the recording via the portal." }
@@ -168,7 +175,7 @@ let state = {
     bcMode: 'stage'
 };
 
-// ===== UI UTILS (kept from original) =====
+// ===== UI UTILS =====
 const toast = (msg) => {
     const t = document.createElement('div');
     t.className = 'glass px-4 py-3 text-sm font-semibold text-white shadow-xl flex items-center gap-2 bg-slate-800/90 border-l-4 border-l-[#ff6d5a]';
@@ -222,11 +229,11 @@ const unlockSettings = (e) => {
     } else { input.value=''; toast('Invalid Admin PIN - 00000'); }
 };
 
-// ===== PRODUCTION PERSISTENT LOGIC - REPLACES RAM VERSION =====
+// ===== PRODUCTION PERSISTENT LOGIC =====
 const initApp = async () => {
     const tbody = document.getElementById('crm-body');
     const dbStatus = document.getElementById('db-status');
-    tbody.innerHTML = '<tr><td colspan="3" class="text-center py-8 text-blue-400"><i class="fa-solid fa-database fa-spin mr-2"></i>Syncing with Neon Postgres via n8n (direct host, no pooler)...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="3" class="text-center py-8 text-blue-400"><i class="fa-solid fa-database fa-spin mr-2"></i>Syncing with Neon Postgres via n8n...</td></tr>';
     dbStatus.textContent = 'DB: Syncing Neon...';
     dbStatus.className = 'text-xs px-3 py-1.5 rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/30';
     try {
@@ -254,7 +261,7 @@ const initApp = async () => {
         toast(`Loaded ${state.leads.length} leads from Neon Postgres`);
     } catch(err){
         console.error(err);
-        tbody.innerHTML = `<tr><td colspan="3" class="text-center py-8 text-red-400">Failed to load from Neon<br><span class="text-xs text-slate-400">${ENDPOINTS.GET}<br>Fix: Workflow Active + Production URL + Postgres credential direct host (no -pooler-, no channel_binding) + Query SELECT * FROM leads;</span></td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="3" class="text-center py-8 text-red-400">Failed to load from Neon<br><span class="text-xs text-slate-400">${ENDPOINTS.GET}<br>Fix: Workflow Active + Postgres Direct Host + Query SELECT * FROM leads;</span></td></tr>`;
         dbStatus.textContent = 'DB: Error - Check n8n workflows';
         dbStatus.className = 'text-xs px-3 py-1.5 rounded-full bg-red-500/20 text-red-400 border border-red-500/30';
         state.leads = [];
@@ -263,7 +270,6 @@ const initApp = async () => {
     renderFAQs();
 };
 
-// ===== ORIGINAL UI LOGIC - KEPT 100% + PERSISTENCE ADDED =====
 const filterCRM = (s) => { document.getElementById('crm-filter').value = s; renderCRM(); };
 const renderCRM = () => {
     const q = (document.getElementById('crm-search').value||'').toLowerCase();
@@ -282,7 +288,7 @@ const renderCRM = () => {
         return l.stage===f;
     });
     if(filtered.length===0){
-        tbody.innerHTML = '<tr><td colspan="3" class="text-center text-slate-500 py-8 text-sm bg-black/10"><i class="fa-solid fa-inbox text-2xl mb-2 block"></i>No leads in Neon. Add via Quick Lead - will INSERT via n8n + WhatsApp API.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="3" class="text-center text-slate-500 py-8 text-sm bg-black/10"><i class="fa-solid fa-inbox text-2xl mb-2 block"></i>No leads in Neon. Add via Quick Lead.</td></tr>';
     } else {
         tbody.innerHTML = filtered.map(l=>{
             let sClass = 'text-slate-300'; if(l.stage==='Stage 2: Engaged') sClass='text-blue-400'; if(l.stage==='Stage 3: Ready') sClass='text-amber-400'; if(l.joined) sClass='text-green-400'; if(l.human) sClass='text-red-400 font-bold';
@@ -349,7 +355,6 @@ const sendMsg = async () => {
                 else aiReply = JSON.stringify(data);
             } else {
                 aiReply = await res.text();
-                // Remove leading = if present from old expression bug
                 if(aiReply.startsWith('=')) aiReply = aiReply.substring(1);
                 aiReply = aiReply.replace(/^\{\{/, '').replace(/\}\}$/, '').trim();
             }
@@ -368,11 +373,10 @@ const sendMsg = async () => {
     }
 };
 
-// ===== PERSISTENT ACTIONS - REPLACE RAM VERSION =====
 const toggleHuman = async (id) => { const l = state.leads.find(x=>String(x.id)===String(id)); l.human = !l.human; await updateLeadInNeon(l); toast(l.human?'Manual Takeover Active - Saved to Neon - AI paused':'AI Resumed - Saved to Neon'); if(String(state.selectedId)===String(id)) selectLead(id); renderCRM(); };
 const ackJoined = async (id) => { const l = state.leads.find(x=>String(x.id)===String(id)); l.joined = true; l.stage='Stage 4: Joined VIP'; await updateLeadInNeon(l); toast('Joined VIP - Saved to Neon - Brain 2 Active'); if(String(state.selectedId)===String(id)) selectLead(id); renderCRM(); };
 const revertJoined = async (id) => { const l = state.leads.find(x=>String(x.id)===String(id)); l.joined = false; l.stage='Stage 3: Ready'; await updateLeadInNeon(l); toast('Reverted to Stage 3 - Saved to Neon - Brain 1'); if(String(state.selectedId)===String(id)) selectLead(id); renderCRM(); };
-const updateLeadInNeon = async (lead) => { try{ await fetch(ENDPOINTS.UPDATE, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ id: lead.id, stage: lead.stage, joined: lead.joined, human: lead.human }) }); }catch(e){ toast('Failed to save to Neon - check POST update workflow Active + direct host credential'); } };
+const updateLeadInNeon = async (lead) => { try{ await fetch(ENDPOINTS.UPDATE, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ id: lead.id, stage: lead.stage, joined: lead.joined, human: lead.human }) }); }catch(e){ toast('Failed to save to Neon'); } };
 const addLead = async () => {
     const n = document.getElementById('ql-name').value.trim();
     const p = document.getElementById('ql-phone').value.trim();
@@ -397,7 +401,6 @@ const processCSV = async () => {
     await initApp();
 };
 
-// ===== KNOWLEDGE BASE (kept from original) =====
 const renderFAQs = () => {
     const list = document.getElementById('faq-list');
     const countEl = document.getElementById('faq-count');
@@ -406,11 +409,10 @@ const renderFAQs = () => {
     if(state.faqs.length===0){ list.innerHTML='<div class="text-center py-10 text-slate-500 text-sm"><i class="fa-solid fa-database text-3xl mb-3 block opacity-50"></i>Knowledge base empty - will be stored in Neon pgvector</div>'; return; }
     list.innerHTML = state.faqs.map(faq=>`<div class="bg-black/30 p-4 rounded-lg border border-white/5 relative group"><div class="pr-8"><div class="font-bold text-sm text-blue-400 mb-1 flex gap-2"><span class="opacity-50">Q:</span> ${faq.q}</div><div class="text-sm text-slate-300 leading-relaxed flex gap-2"><span class="opacity-50 text-green-400">A:</span> ${faq.a}</div></div><button onclick="deleteFAQ(${faq.id})" class="absolute top-4 right-4 text-slate-500 hover:text-red-400 opacity-0 group-hover:opacity-100"><i class="fa-solid fa-trash-can"></i></button></div>`).join('');
 };
-const addFAQ = () => { const q=document.getElementById('faq-q').value.trim(); const a=document.getElementById('faq-a').value.trim(); if(!q||!a) return toast('Provide Q and A'); state.faqs.unshift({id:Date.now(), q, a}); document.getElementById('faq-q').value=''; document.getElementById('faq-a').value=''; renderFAQs(); toast('FAQ added - will sync to Neon knowledge_base table'); };
+const addFAQ = () => { const q=document.getElementById('faq-q').value.trim(); const a=document.getElementById('faq-a').value.trim(); if(!q||!a) return toast('Provide Q and A'); state.faqs.unshift({id:Date.now(), q, a}); document.getElementById('faq-q').value=''; document.getElementById('faq-a').value=''; renderFAQs(); toast('FAQ added'); };
 const deleteFAQ = (id) => { state.faqs=state.faqs.filter(f=>f.id!==id); renderFAQs(); toast('FAQ removed'); };
 const uploadKnowledgeDoc = () => { const fileInput=document.getElementById('kb-upload'); if(!fileInput.files.length) return toast('Select doc'); toast('Document embedding via n8n OpenAI → Neon pgvector (future)'); fileInput.value=''; };
 
-// ===== BROADCAST (kept) =====
 const setBcMode = (mode) => {
     state.bcMode=mode;
     if(mode==='stage'){ document.getElementById('btn-mode-stage').className='px-4 py-1.5 text-xs font-bold rounded-md bg-[#ff6d5a] text-white shadow-md'; document.getElementById('btn-mode-indiv').className='px-4 py-1.5 text-xs font-bold rounded-md text-slate-400 hover:text-white'; document.getElementById('bc-stage-container').classList.remove('hidden'); document.getElementById('bc-indiv-container').classList.add('hidden'); }
@@ -429,8 +431,28 @@ const previewBC = () => {
     openModal('bc-modal');
 };
 const sendBC = () => { let count=0; if(state.bcMode==='individual'){ count=document.querySelectorAll('.bc-chk:checked').length; } else { const s=document.getElementById('bc-stage').value; count=state.leads.filter(l=>l.stage===s || (s==='Stage 4: Joined VIP' && l.joined)).length; } if(count===0) return toast('No recipients selected'); toast(`Broadcast queued to ${count} via WhatsApp Business API - Check n8n Executions`); document.getElementById('bc-media').value=''; };
-const saveAI = () => { toast('Model settings saved - Sync prompts to n8n ai-chat workflow OpenAI node'); };
-const exportCSV = () => { toast('Export: In Neon SQL Editor SELECT * FROM leads → Export CSV'); };
+const saveAI = () => { toast('Model settings updated locally - Update n8n nodes for full effect'); };
+
+// ** FIXED: Actually triggers a valid CSV export from local state **
+const exportCSV = () => {
+    if(!state.leads || state.leads.length === 0) return toast('No leads available to export');
+    const headers = ['id', 'name', 'phone', 'stage', 'human', 'joined'];
+    const csvRows = [headers.join(',')];
+    state.leads.forEach(lead => {
+        const row = headers.map(header => JSON.stringify(lead[header] || ''));
+        csvRows.push(row.join(','));
+    });
+    const blob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.setAttribute('hidden', '');
+    a.setAttribute('href', url);
+    a.setAttribute('download', 'wbaichat_pipeline.csv');
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    toast('Pipeline exported successfully to CSV');
+};
 </script>
 </body>
 </html>
