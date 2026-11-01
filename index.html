@@ -63,6 +63,7 @@
                 <button onclick="switchTab('tab-outreach', this)" class="nav-btn btn-glass btn-n8n text-xs px-4"><i class="fa-solid fa-upload"></i> Outreach</button>
                 <button onclick="switchTab('tab-crm', this)" class="nav-btn btn-glass btn-gray text-xs px-4"><i class="fa-solid fa-comments"></i> CRM & Chat</button>
                 <button onclick="switchTab('tab-ai', this)" class="nav-btn btn-glass btn-gray text-xs px-4"><i class="fa-solid fa-brain"></i> AI Models</button>
+                <button onclick="switchTab('tab-analyzer', this)" class="nav-btn btn-glass btn-gray text-xs px-4"><i class="fa-solid fa-magnifying-glass-chart"></i> WA Analyzer</button>
                 <button onclick="switchTab('tab-bot', this)" class="nav-btn btn-glass btn-gray text-xs px-4"><i class="fa-solid fa-robot"></i> Bot Auto</button>
                 <button onclick="switchTab('tab-knowledge', this)" class="nav-btn btn-glass btn-gray text-xs px-4"><i class="fa-solid fa-database"></i> Knowledge</button>
                 <button onclick="switchTab('tab-bulk', this)" class="nav-btn btn-glass btn-gray text-xs px-4"><i class="fa-solid fa-bullhorn"></i> Broadcast</button>
@@ -105,22 +106,96 @@
 
             <div id="tab-ai" class="tab-pane hidden space-y-6">
                 <div class="glass p-5 sm:p-8"><div class="flex flex-col sm:flex-row justify-between items-start gap-4 mb-6"><div><div class="flex items-center gap-3 mb-1"><div class="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center shrink-0"><i class="fa-solid fa-microchip text-blue-400"></i></div><h2 class="text-lg font-bold">AI Provider & Engine - OpenAI</h2></div><p class="text-sm text-slate-400 sm:ml-11">Manage LLM routing globally. Locked by PIN for security. Connected via n8n OpenAI credential.</p></div><div class="flex items-center gap-3 w-full sm:w-auto justify-end"><span id="lock-status" class="text-xs font-bold text-amber-400 bg-amber-400/10 px-3 py-1.5 rounded-full border border-amber-400/30 flex items-center gap-1"><i class="fa-solid fa-lock text-[10px]"></i> Locked</span><button id="btn-unlock" onclick="openModal('unlock-modal')" class="btn-glass btn-gold text-xs"><i class="fa-solid fa-key"></i> Unlock</button><button id="btn-save-ai" onclick="saveAI()" class="btn-glass btn-green text-xs hidden"><i class="fa-solid fa-check"></i> Save & Sync to n8n</button></div></div><div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:ml-11"><div><label class="block text-xs font-semibold text-slate-400 mb-1.5 uppercase">Provider Base</label><select id="ai-provider" class="input-glass" disabled><option value="openai">OpenAI (Primary) - gpt-4o-mini</option><option value="anthropic">Anthropic (future)</option></select></div><div><label class="block text-xs font-semibold text-slate-400 mb-1.5 uppercase">Active Model Route</label><select id="ai-model" class="input-glass" disabled><option value="gpt-4o-mini">GPT-4o mini (Fast, $0.15/1M - Recommended for sales)</option><option value="gpt-4o">GPT-4o (Best quality)</option></select></div></div></div>
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div class="glass p-5 sm:p-6 flex flex-col"><div class="flex items-center gap-2 mb-2"><i class="fa-solid fa-brain text-blue-400"></i><h3 class="font-bold text-white text-base">Brain 1: Sales</h3></div><p class="text-xs text-slate-400 mb-4">Active until lead joins. Uses n8n OpenAI node with sales prompt.</p><textarea id="prompt-b1" class="input-glass flex-1 min-h-[350px] mb-4 resize-y text-sm leading-relaxed text-slate-300">You are Sarah, expert high-ticket sales consultant. GOAL: Guide prospects through stock masterclass funnel, handle objections, qualify for VIP Group. TONE: Professional, encouraging, urgent. MATRIX: If price: "Initial masterclass is 100% complimentary." If no time: "Recordings sent to VIP group." CLOSING: Provide group invite link. Close with exactly: 'Will be adding you to the group shortly.'</textarea><button onclick="toast('Brain 1 Prompt - Will sync to n8n ai-chat workflow OpenAI node')" class="btn-glass btn-gray w-full mt-auto"><i class="fa-solid fa-floppy-disk"></i> Deploy Brain 1 to n8n</button></div>
                     
                     <div class="glass p-5 sm:p-6 flex flex-col"><div class="flex items-center gap-2 mb-2"><i class="fa-solid fa-graduation-cap text-green-400"></i><h3 class="font-bold text-white text-base">Brain 2: Support</h3></div><p class="text-xs text-slate-400 mb-4">Takes over when Ack Join clicked. Focused purely on retention.</p><textarea id="prompt-b2" class="input-glass flex-1 min-h-[350px] mb-4 resize-y text-sm leading-relaxed text-slate-300">You are Alex, VIP Community Success Manager. GOAL: Prospect joined VIP group. Retain, prepare for first session, answer logistics. TONE: Supportive, warm, clear. GUIDELINES: Do NOT sell. If charts: "Proprietary chart setups posted 1 hour before bell in VIP group." If tech: "Make sure Zoom installed for tonight."</textarea><button onclick="toast('Brain 2 Prompt - Will sync to n8n ai-chat workflow')" class="btn-glass btn-gray w-full mt-auto"><i class="fa-solid fa-floppy-disk"></i> Deploy Brain 2 to n8n</button></div>
-
-                    <div class="glass p-5 sm:p-6 flex flex-col"><div class="flex items-center gap-2 mb-2"><i class="fa-solid fa-magnifying-glass-chart text-amber-400"></i><h3 class="font-bold text-white text-base">Brain 3: WA Analyzer</h3></div><p class="text-xs text-slate-400 mb-4">Analyzes chat history for sentiment and objections.</p><textarea id="prompt-b3" class="input-glass flex-1 min-h-[350px] mb-4 resize-y text-sm leading-relaxed text-slate-300">You are an expert sales analyst. Review the provided WhatsApp chat history.
-GOAL: Extract the primary objections, gauge the prospect's sentiment (Cold, Warm, Hot), and suggest the next best action for the human closer.
-FORMAT: Output a brief JSON with keys: "sentiment", "main_objection", and "recommended_action". Do not output markdown.</textarea><button onclick="toast('Brain 3 Prompt - Syncs to an n8n manual trigger Analyzer workflow')" class="btn-glass btn-gray w-full mt-auto"><i class="fa-solid fa-floppy-disk"></i> Deploy Brain 3 to n8n</button></div>
                 </div>
             </div>
 
-            <!-- ... Other tabs (bot, knowledge, bulk, handbook) remain exactly the same as your original ... -->
+            <!-- WA Analyzer Tab (NEW) -->
+            <div id="tab-analyzer" class="tab-pane hidden space-y-6">
+                <div class="glass p-5 sm:p-8">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center shrink-0">
+                            <i class="fa-solid fa-magnifying-glass-chart text-amber-400 text-lg"></i>
+                        </div>
+                        <h2 class="text-lg sm:text-xl font-bold">WhatsApp Chat Analyzer (Brain 3)</h2>
+                    </div>
+                    <p class="text-sm text-slate-400 mb-6 sm:ml-13">Upload a .txt chat export to generate sentiment analysis, objection handling, and prompt guides for the AI.</p>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Upload & Prompt Config -->
+                        <div class="space-y-4 bg-black/20 p-5 rounded-xl border border-white/5 flex flex-col">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-400 mb-1.5 uppercase">1. Upload WhatsApp Chat (.txt)</label>
+                                <input type="file" id="wa-chat-upload" class="input-glass file:mr-4 file:py-1.5 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-amber-500/20 file:text-amber-400 hover:file:bg-amber-500/30 cursor-pointer text-sm" accept=".txt">
+                            </div>
+                            <div class="flex-1 flex flex-col">
+                                <label class="block text-xs font-semibold text-slate-400 mb-1.5 uppercase">2. Analyzer System Prompt</label>
+                                <textarea id="prompt-b3" class="input-glass flex-1 min-h-[200px] resize-y text-sm text-slate-300 leading-relaxed">You are an expert sales analyst. Review the provided WhatsApp chat history.
+GOAL: Extract the primary objections, gauge the prospect's sentiment (Cold, Warm, Hot), and suggest the next best action for the AI closer. Generate a refined custom instruction guide that can be added to Brain 1 to close this specific lead.
+FORMAT: Markdown with clear headers.</textarea>
+                            </div>
+                            <button onclick="analyzeChatFile()" class="btn-glass btn-gold w-full py-3 text-black font-bold">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i> Analyze Chat File
+                            </button>
+                        </div>
+
+                        <!-- Analysis Results -->
+                        <div class="bg-black/30 p-5 rounded-xl border border-white/5 flex flex-col min-h-[400px]">
+                            <h3 class="font-bold text-white text-sm mb-3 flex items-center gap-2"><i class="fa-solid fa-square-poll-vertical text-amber-400"></i> AI Analysis Results</h3>
+                            <div id="analyzer-results" class="flex-1 overflow-y-auto text-sm text-slate-300 bg-[#0b1120]/50 p-4 rounded border border-white/5 whitespace-pre-wrap leading-relaxed">
+                                <div class="h-full flex flex-col items-center justify-center text-slate-500 opacity-60">
+                                    <i class="fa-regular fa-file-lines text-4xl mb-3"></i>
+                                    Upload a chat and click Analyze to process via n8n & OpenAI
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div id="tab-bot" class="tab-pane hidden space-y-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="glass p-6"><div class="flex items-center gap-3 mb-5"><div class="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center shrink-0"><i class="fa-solid fa-clock text-amber-400 text-lg"></i></div><div><h2 class="font-bold text-white text-lg">Operating Hours - n8n</h2><p class="text-xs text-slate-400">Timezone: SGT (GMT+8) - Controlled in n8n workflow</p></div></div><div class="flex gap-4 mb-6"><div class="flex-1"><label class="block text-xs font-semibold text-slate-400 mb-1.5 uppercase">Start</label><input type="time" class="input-glass" value="09:00"></div><div class="flex-1"><label class="block text-xs font-semibold text-slate-400 mb-1.5 uppercase">End</label><input type="time" class="input-glass" value="21:00"></div></div><button onclick="toast('Operating Hours saved - update in n8n workflow Switch node')" class="btn-glass btn-gray w-full"><i class="fa-solid fa-cloud-arrow-up"></i> Sync to n8n</button></div>
-                    <div class="glass p-6"><div class="flex items-center gap-3 mb-5"><div class="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center shrink-0"><i class="fa-brands fa-whatsapp text-green-400 text-lg"></i></div><div><h2 class="font-bold text-white text-lg">WhatsApp Business API - n8n</h2><p class="text-xs text-slate-400">Meta Developers → WhatsApp API</p></div></div><div class="space-y-3 mb-6"><input type="text" placeholder="Phone Number ID" class="input-glass text-sm"><input type="text" placeholder="Access Token (from Meta)" class="input-glass text-sm"><input type="text" placeholder="Verify Token (you set)" class="input-glass text-sm"><div class="text-[11px] text-slate-500">Webhook URL for Meta: https://lhy05.app.n8n.cloud/webhook/whatsapp-incoming<br>Verify Token: set same in Meta and n8n Webhook node</div></div><button onclick="toast('Save WhatsApp creds in n8n: Credentials → WhatsApp Business')" class="btn-glass btn-green w-full"><i class="fa-brands fa-whatsapp"></i> Connect WhatsApp in n8n</button></div>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="glass p-6">
+                        <div class="flex items-center gap-3 mb-5">
+                            <div class="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center shrink-0"><i class="fa-solid fa-clock text-amber-400 text-lg"></i></div>
+                            <div><h2 class="font-bold text-white text-lg">Operating Hours</h2><p class="text-xs text-slate-400">Timezone: SGT (GMT+8) - n8n Switch</p></div>
+                        </div>
+                        <div class="flex gap-4 mb-6">
+                            <div class="flex-1"><label class="block text-xs font-semibold text-slate-400 mb-1.5 uppercase">Start</label><input type="time" class="input-glass" value="09:00"></div>
+                            <div class="flex-1"><label class="block text-xs font-semibold text-slate-400 mb-1.5 uppercase">End</label><input type="time" class="input-glass" value="21:00"></div>
+                        </div>
+                        <button onclick="toast('Operating Hours saved - update in n8n workflow Switch node')" class="btn-glass btn-gray w-full"><i class="fa-solid fa-cloud-arrow-up"></i> Sync to n8n</button>
+                    </div>
+                    
+                    <div class="glass p-6">
+                        <div class="flex items-center gap-3 mb-5">
+                            <div class="w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center shrink-0"><i class="fa-solid fa-stopwatch text-purple-400 text-lg"></i></div>
+                            <div><h2 class="font-bold text-white text-lg">Humanized Delays</h2><p class="text-xs text-slate-400">Randomize AI reply times</p></div>
+                        </div>
+                        <div class="flex gap-4 mb-6">
+                            <div class="flex-1"><label class="block text-xs font-semibold text-slate-400 mb-1.5 uppercase">Min (Sec)</label><input type="number" id="delay-min" class="input-glass" value="3"></div>
+                            <div class="flex-1"><label class="block text-xs font-semibold text-slate-400 mb-1.5 uppercase">Max (Sec)</label><input type="number" id="delay-max" class="input-glass" value="8"></div>
+                        </div>
+                        <div class="text-[10px] text-slate-500 mb-4 h-4">Uses Math.random() in n8n Wait node</div>
+                        <button onclick="toast('Delay settings saved - Update Wait node expression in n8n')" class="btn-glass w-full text-white" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9);"><i class="fa-solid fa-stopwatch"></i> Sync Delay Config</button>
+                    </div>
+
+                    <div class="glass p-6">
+                        <div class="flex items-center gap-3 mb-5">
+                            <div class="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center shrink-0"><i class="fa-brands fa-whatsapp text-green-400 text-lg"></i></div>
+                            <div><h2 class="font-bold text-white text-lg">WhatsApp API</h2><p class="text-xs text-slate-400">Meta Developers Connect</p></div>
+                        </div>
+                        <div class="space-y-3 mb-6">
+                            <input type="text" placeholder="Phone Number ID" class="input-glass text-sm">
+                            <input type="text" placeholder="Access Token (from Meta)" class="input-glass text-sm">
+                            <input type="text" placeholder="Verify Token (you set)" class="input-glass text-sm">
+                            <div class="text-[11px] text-slate-500 line-clamp-2">Webhook: https://[your-n8n]/webhook/whatsapp-incoming</div>
+                        </div>
+                        <button onclick="toast('Save WhatsApp creds in n8n: Credentials → WhatsApp Business')" class="btn-glass btn-green w-full"><i class="fa-brands fa-whatsapp"></i> Connect in n8n</button>
+                    </div>
                 </div>
             </div>
 
@@ -135,7 +210,7 @@ FORMAT: Output a brief JSON with keys: "sentiment", "main_objection", and "recom
             <div id="tab-handbook" class="tab-pane hidden space-y-4 max-w-3xl mx-auto">
                 <div class="glass p-6 sm:p-8 mb-4 flex items-center gap-4 bg-gradient-to-r from-amber-500/10 to-transparent border-l-4 border-l-amber-500"><i class="fa-solid fa-book text-amber-400 text-3xl"></i><div><h2 class="font-bold text-xl text-white">Production Handbook - Full Stack Restart</h2><p class="text-sm text-slate-400 mt-1">Postgres + n8n + WhatsApp + OpenAI - Zero to Production</p></div></div>
                 <div class="glass p-5"><h3 class="font-bold text-sm text-white mb-2"><i class="fa-solid fa-database text-blue-400"></i> 1. Neon Postgres - Fresh</h3><p class="text-sm text-slate-300 bg-black/20 p-3 rounded">Run schema.sql. Connect with pooling OFF (critical). Host without -pooler-, no channel_binding. Test SELECT * FROM leads;</p></div>
-                <div class="glass p-5"><h3 class="font-bold text-sm text-white mb-2"><i class="fa-solid fa-cloud text-[#ff6d5a]"></i> 2. n8n Cloud - 5 Workflows</h3><div class="text-sm text-slate-300 bg-black/20 p-3 rounded space-y-1"><div>• GET /get-crm-data → SELECT * FROM leads</div><div>• POST /add-lead → INSERT</div><div>• POST /update-lead-stage → UPDATE</div><div>• POST /ai-chat → OpenAI gpt-4o-mini + Brain 1/2 prompts</div><div>• POST /whatsapp-incoming → Receive WA messages → AI reply</div><div>• POST /whatsapp-send → Send WA templates</div></div></div>
+                <div class="glass p-5"><h3 class="font-bold text-sm text-white mb-2"><i class="fa-solid fa-cloud text-[#ff6d5a]"></i> 2. n8n Cloud - Workflows</h3><div class="text-sm text-slate-300 bg-black/20 p-3 rounded space-y-1"><div>• GET /get-crm-data → SELECT * FROM leads</div><div>• POST /add-lead → INSERT</div><div>• POST /update-lead-stage → UPDATE</div><div>• POST /ai-chat → OpenAI gpt-4o-mini + Brain 1/2 prompts</div><div>• POST /whatsapp-incoming → Receive WA messages → AI reply</div><div>• POST /whatsapp-send → Send WA templates</div><div>• POST /wa-analyzer → Analyze uploaded text files</div></div></div>
                 <div class="glass p-5"><h3 class="font-bold text-sm text-white mb-2"><i class="fa-solid fa-key text-slate-400"></i> 3. OpenAI API</h3><p class="text-sm text-slate-300 bg-black/20 p-3 rounded">platform.openai.com → API Keys → Create → n8n Credentials → OpenAI → Paste. Used in ai-chat workflow. Cost: gpt-4o-mini $0.15/1M tokens.</p></div>
                 <div class="glass p-5"><h3 class="font-bold text-sm text-white mb-2"><i class="fa-brands fa-whatsapp text-green-400"></i> 4. WhatsApp Business API</h3><p class="text-sm text-slate-300 bg-black/20 p-3 rounded">developers.facebook.com → Create App → WhatsApp → Get Phone Number ID + Access Token. n8n Credentials → WhatsApp Business. Webhook: https://lhy05.app.n8n.cloud/webhook/whatsapp-incoming + Verify Token you set.</p></div>
                 <div class="glass p-5"><h3 class="font-bold text-sm text-white mb-2"><i class="fa-brands fa-github"></i> 5. GitHub Pages - Deploy</h3><p class="text-sm text-slate-300 bg-black/20 p-3 rounded">Push index.html to repo → Settings → Pages → Deploy from main branch. Set N8N_BASE to https://lhy05.app.n8n.cloud/webhook in index.html top. PIN: 245689168 (app), 00000 (AI settings)</p></div>
@@ -158,6 +233,7 @@ const ENDPOINTS = {
     ADD: `${N8N_BASE}/add-lead`,
     UPDATE: `${N8N_BASE}/update-lead-stage`,
     AI: `${N8N_BASE}/ai-chat`,
+    ANALYZER: `${N8N_BASE}/wa-analyzer`,
     WHATSAPP_SEND: `${N8N_BASE}/whatsapp-send`,
     WHATSAPP_INCOMING: `${N8N_BASE}/whatsapp-incoming`,
     CHAT_HISTORY: `${N8N_BASE}/get-chat-history`
@@ -254,7 +330,7 @@ const initApp = async () => {
             joined: !!row.joined,
             created_at: row.created_at,
             updated_at: row.updated_at,
-            history: [] // chat_history loaded via separate call
+            history: [] 
         }));
         dbStatus.textContent = `DB: ${state.leads.length} leads from Neon ✓`;
         dbStatus.className = 'text-xs px-3 py-1.5 rounded-full bg-green-500/20 text-green-400 border border-green-500/30';
@@ -433,7 +509,6 @@ const previewBC = () => {
 const sendBC = () => { let count=0; if(state.bcMode==='individual'){ count=document.querySelectorAll('.bc-chk:checked').length; } else { const s=document.getElementById('bc-stage').value; count=state.leads.filter(l=>l.stage===s || (s==='Stage 4: Joined VIP' && l.joined)).length; } if(count===0) return toast('No recipients selected'); toast(`Broadcast queued to ${count} via WhatsApp Business API - Check n8n Executions`); document.getElementById('bc-media').value=''; };
 const saveAI = () => { toast('Model settings updated locally - Update n8n nodes for full effect'); };
 
-// ** FIXED: Actually triggers a valid CSV export from local state **
 const exportCSV = () => {
     if(!state.leads || state.leads.length === 0) return toast('No leads available to export');
     const headers = ['id', 'name', 'phone', 'stage', 'human', 'joined'];
@@ -452,6 +527,49 @@ const exportCSV = () => {
     a.click();
     document.body.removeChild(a);
     toast('Pipeline exported successfully to CSV');
+};
+
+// ** NEW: WA Analyzer API Logic **
+const analyzeChatFile = async () => {
+    const fileInput = document.getElementById('wa-chat-upload');
+    const prompt = document.getElementById('prompt-b3').value;
+    const resultsBox = document.getElementById('analyzer-results');
+
+    if(!fileInput.files.length) return toast('Please upload a .txt chat file first');
+    
+    resultsBox.innerHTML = '<div class="h-full flex flex-col items-center justify-center text-amber-400"><i class="fa-solid fa-circle-notch fa-spin text-4xl mb-4"></i><span class="font-bold text-sm">Processing chat through OpenAI via n8n...</span></div>';
+    
+    try {
+        const text = await fileInput.files[0].text();
+        
+        const res = await fetch(ENDPOINTS.ANALYZER, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ chat_text: text, system_prompt: prompt })
+        });
+
+        if(!res.ok) throw new Error(`Webhook returned status ${res.status}`);
+
+        let aiReply = "";
+        const ct = res.headers.get('content-type') || '';
+        if(ct.includes('application/json')){
+            const data = await res.json();
+            if(data.reply) aiReply = data.reply;
+            else if(data.message) aiReply = data.message;
+            else if(data.output) aiReply = data.output;
+            else if(data.choices && data.choices[0] && data.choices[0].message) aiReply = data.choices[0].message.content;
+            else aiReply = JSON.stringify(data, null, 2);
+        } else {
+            aiReply = await res.text();
+        }
+
+        resultsBox.innerHTML = aiReply.replace(/^\{\{/, '').replace(/\}\}$/, '').trim();
+        toast('Analysis complete!');
+
+    } catch (e) {
+        resultsBox.innerHTML = `<div class="text-red-400 flex flex-col items-center justify-center h-full text-center"><i class="fa-solid fa-triangle-exclamation text-3xl mb-3"></i> <b>Connection Error</b><br><br>${e.message}<br><br><span class="text-xs text-slate-500 max-w-sm">Make sure you have created the <b>POST /wa-analyzer</b> workflow in n8n, that it is activated, and CORS is allowed in the webhook node settings.</span></div>`;
+        toast('Failed to analyze chat - Check n8n Webhook');
+    }
 };
 </script>
 </body>
