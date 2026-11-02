@@ -299,14 +299,32 @@ const unlockApp = (e) => {
 
 // ===== CRM LOGIC (Same as before) =====
 const initApp = async () => {
+    const dbStatus = document.getElementById('db-status');
+    dbStatus.textContent = 'DB: Syncing...';
+    dbStatus.className = 'text-xs px-3 py-1.5 rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/30';
+    
     try {
         const res = await fetch(ENDPOINTS.GET);
+        if(!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        
         let data = await res.json();
         state.leads = (Array.isArray(data) ? data : data.rows || []).map(row=>({
             id: row.id, name: row.name, phone: row.phone, stage: row.stage, human: !!row.human, joined: !!row.joined, history: [] 
         }));
-        toast(`Loaded ${state.leads.length} leads`);
-    } catch(err) { toast('Error connecting to CRM DB'); }
+        
+        // Update the UI button to Green Success
+        dbStatus.textContent = `DB: ${state.leads.length} Leads ✓`;
+        dbStatus.className = 'text-xs px-3 py-1.5 rounded-full bg-green-500/20 text-green-400 border border-green-500/30';
+        toast(`Loaded ${state.leads.length} leads from Neon`);
+        
+    } catch(err) { 
+        console.error("Database fetch failed:", err);
+        // Update the UI button to Red Error
+        dbStatus.textContent = 'DB: Disconnected ✗';
+        dbStatus.className = 'text-xs px-3 py-1.5 rounded-full bg-red-500/20 text-red-400 border border-red-500/30';
+        toast('Connection failed: Ensure n8n GET workflow is Active and CORS is ON.'); 
+    }
+    
     renderCRM();
 };
 
