@@ -237,26 +237,32 @@ const saveCoreConfig = () => {
 const fetchSettingsFromNeon = async () => {
     try {
         const res = await fetch(ENDPOINTS.SETTINGS, { method: 'GET' });
-        if(!res.ok) return;
-        const data = await res.json();
+        if (!res.ok) return;
+        
+        let data = await res.json();
         const settings = Array.isArray(data) ? data : (data.rows ? data.rows : []);
         
-        // Loop through DB settings and populate UI
         settings.forEach(s => {
-            if(s.key === 'prompt_b1' && document.getElementById('prompt-b1')) document.getElementById('prompt-b1').value = s.value;
-            if(s.key === 'prompt_b2' && document.getElementById('prompt-b2')) document.getElementById('prompt-b2').value = s.value;
-            if(s.key === 'prompt_b3' && document.getElementById('prompt-b3')) document.getElementById('prompt-b3').value = s.value;
-            if(s.key === 'hour_start' && document.getElementById('hour-start')) document.getElementById('hour-start').value = s.value;
-            if(s.key === 'hour_end' && document.getElementById('hour-end')) document.getElementById('hour-end').value = s.value;
-            if(s.key === 'delay_min' && document.getElementById('delay-min')) document.getElementById('delay-min').value = s.value;
-            if(s.key === 'delay_max' && document.getElementById('delay-max')) document.getElementById('delay-max').value = s.value;
-            if(s.key === 'wa_phone_id' && document.getElementById('wa-phone-id')) document.getElementById('wa-phone-id').value = s.value;
-            if(s.key === 'wa_token' && document.getElementById('wa-token')) document.getElementById('wa-token').value = s.value;
-            if(s.key === 'wa_verify' && document.getElementById('wa-verify')) document.getElementById('wa-verify').value = s.value;
+            if (s.key === 'prompt_b1' && document.getElementById('prompt-b1') && s.value) {
+                document.getElementById('prompt-b1').value = s.value;
+            }
+            if (s.key === 'prompt_b2' && document.getElementById('prompt-b2') && s.value) {
+                document.getElementById('prompt-b2').value = s.value;
+            }
+            if (s.key === 'prompt_b3' && document.getElementById('prompt-b3') && s.value) {
+                document.getElementById('prompt-b3').value = s.value;
+            }
+            if (s.key === 'hour_start' && document.getElementById('hour-start')) document.getElementById('hour-start').value = s.value;
+            if (s.key === 'hour_end' && document.getElementById('hour-end')) document.getElementById('hour-end').value = s.value;
+            if (s.key === 'delay_min' && document.getElementById('delay-min')) document.getElementById('delay-min').value = s.value;
+            if (s.key === 'delay_max' && document.getElementById('delay-max')) document.getElementById('delay-max').value = s.value;
+            if (s.key === 'wa_phone_id' && document.getElementById('wa-phone-id')) document.getElementById('wa-phone-id').value = s.value;
+            if (s.key === 'wa_token' && document.getElementById('wa-token')) document.getElementById('wa-token').value = s.value;
+            if (s.key === 'wa_verify' && document.getElementById('wa-verify')) document.getElementById('wa-verify').value = s.value;
         });
-        toast('Database Settings Fetched!');
+        toast('Loaded saved prompts & settings from Neon ✓');
     } catch (err) {
-        console.log("Could not load settings - Ensure Settings Webhook is active.");
+        console.error("Could not load settings from Neon:", err);
     }
 };
 
